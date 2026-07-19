@@ -1,0 +1,42 @@
+[
+  {
+    "id": "8f0aeaa7-9bbf-457b-93fe-a2d91a823ea8",
+    "class": "DECISION",
+    "loadGuidance": "ALWAYS",
+    "title": "Design Review: v1 Architecture Decisions",
+    "path": ".squad/decisions/inbox/mikey-design-review-v1-architecture-decisions-8f0aeaa7.md",
+    "status": "active",
+    "createdAt": "2026-07-19T21:04:11.693Z",
+    "updatedAt": "2026-07-19T21:04:11.693Z"
+  },
+  {
+    "id": "0cf98e2f-7f74-4e6d-ad6c-ef56d4e32ff9",
+    "class": "DECISION",
+    "loadGuidance": "ALWAYS",
+    "title": "Exercise List and Concept Arc",
+    "path": ".squad/decisions/inbox/mikey-exercise-list-and-concept-arc-0cf98e2f.md",
+    "status": "active",
+    "createdAt": "2026-07-19T21:04:16.833Z",
+    "updatedAt": "2026-07-19T21:04:16.833Z"
+  },
+  {
+    "id": "c2e79657-ccde-4a8d-91c9-0e10e61f68f3",
+    "class": "POLICY",
+    "loadGuidance": "ALWAYS",
+    "title": "File Ownership Policy",
+    "path": ".squad/memory/policy-inbox/mikey-file-ownership-policy-c2e79657.md",
+    "status": "active",
+    "createdAt": "2026-07-19T21:04:21.825Z",
+    "updatedAt": "2026-07-19T21:04:21.825Z"
+  },
+  {
+    "id": "a4334f81-259c-4992-8953-6fef9334c921",
+    "class": "DECISION",
+    "loadGuidance": "ALWAYS",
+    "title": "Use Nix toolchain",
+    "path": ".squad/decisions/inbox/sspeaks610-use-nix-toolchain-a4334f81.md",
+    "status": "active",
+    "createdAt": "2026-07-19T21:21:58.004Z",
+    "updatedAt": "2026-07-19T21:21:58.004Z"
+  }
+]

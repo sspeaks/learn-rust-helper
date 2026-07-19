@@ -1,0 +1,185 @@
+schema_version = 1
+title = "learn-rust: Gamified Rust Learning Campaign"
+
+[[ranks]]
+id = "cadet"
+name = "Cadet"
+min_xp = 0
+badge = "◊"
+
+[[ranks]]
+id = "operator"
+name = "Operator"
+min_xp = 300
+badge = "☆"
+
+[[ranks]]
+id = "specialist"
+name = "Specialist"
+min_xp = 800
+badge = "◆"
+
+[[ranks]]
+id = "commander"
+name = "Commander"
+min_xp = 1500
+badge = "▲"
+
+[[ranks]]
+id = "legend"
+name = "Legend"
+min_xp = 2300
+badge = "◈"
+
+[[worlds]]
+id = "world-01-foundations"
+name = "Foundations"
+theme = "Core Language"
+unlock_text = "Master functions, variables, types, and control flow—the building blocks of every Rust program."
+
+[[worlds.exercises]]
+id = "ex01-format-scoreboard"
+package = "ex01-format-scoreboard"
+title = "Format Scoreboard"
+skill = "Functions and formatting"
+xp = 100
+prerequisites = []
+unlocks = ["ex02-reactor-calibration"]
+
+[[worlds.exercises]]
+id = "ex02-reactor-calibration"
+package = "ex02-reactor-calibration"
+title = "Reactor Calibration"
+skill = "Variables and arithmetic"
+xp = 110
+prerequisites = ["ex01-format-scoreboard"]
+unlocks = ["ex03-access-control"]
+
+[[worlds.exercises]]
+id = "ex03-access-control"
+package = "ex03-access-control"
+title = "Access Control"
+skill = "Booleans and pattern matching"
+xp = 120
+prerequisites = ["ex02-reactor-calibration"]
+unlocks = ["ex04-energy-loop"]
+
+[[worlds.exercises]]
+id = "ex04-energy-loop"
+package = "ex04-energy-loop"
+title = "Energy Loop"
+skill = "Ranges and iteration"
+xp = 130
+prerequisites = ["ex03-access-control"]
+unlocks = ["ex05-message-normalizer"]
+
+[[worlds.exercises]]
+id = "ex05-message-normalizer"
+package = "ex05-message-normalizer"
+title = "Message Normalizer"
+skill = "String and &str"
+xp = 140
+prerequisites = ["ex04-energy-loop"]
+unlocks = ["ex06-slice-telemetry"]
+
+[[worlds]]
+id = "world-02-ownership"
+name = "Ownership"
+theme = "Memory and Safety"
+unlock_text = "Learn to write fast, safe code by mastering moves, borrows, mutable references, and the borrow checker."
+
+[[worlds.exercises]]
+id = "ex06-slice-telemetry"
+package = "ex06-slice-telemetry"
+title = "Slice Telemetry"
+skill = "References and slices"
+xp = 150
+prerequisites = ["ex05-message-normalizer"]
+unlocks = ["ex07-move-inventory"]
+
+[[worlds.exercises]]
+id = "ex07-move-inventory"
+package = "ex07-move-inventory"
+title = "Move Inventory"
+skill = "Ownership and moves"
+xp = 160
+prerequisites = ["ex06-slice-telemetry"]
+unlocks = ["ex08-borrow-checkpoint"]
+
+[[worlds.exercises]]
+id = "ex08-borrow-checkpoint"
+package = "ex08-borrow-checkpoint"
+title = "Borrow Checkpoint"
+skill = "Mutable borrowing"
+xp = 170
+prerequisites = ["ex07-move-inventory"]
+unlocks = ["ex09-station-crew"]
+
+[[worlds.exercises]]
+id = "ex09-station-crew"
+package = "ex09-station-crew"
+title = "Station Crew"
+skill = "Structs and methods"
+xp = 180
+prerequisites = ["ex08-borrow-checkpoint"]
+unlocks = ["ex10-command-router"]
+
+[[worlds.exercises]]
+id = "ex10-command-router"
+package = "ex10-command-router"
+title = "Command Router"
+skill = "Enums and exhaustive matching"
+xp = 190
+prerequisites = ["ex09-station-crew"]
+unlocks = ["ex11-log-analyzer"]
+
+[[worlds]]
+id = "world-03-collections-errors"
+name = "Collections & Errors"
+theme = "Real-World Data and Recovery"
+unlock_text = "Build with vectors, hash maps, Option, Result, and custom errors—then synthesize all concepts in a capstone."
+
+[[worlds.exercises]]
+id = "ex11-log-analyzer"
+package = "ex11-log-analyzer"
+title = "Log Analyzer"
+skill = "Vectors and iterators"
+xp = 200
+prerequisites = ["ex10-command-router"]
+unlocks = ["ex12-loot-counter"]
+
+[[worlds.exercises]]
+id = "ex12-loot-counter"
+package = "ex12-loot-counter"
+title = "Loot Counter"
+skill = "Hash maps and counting"
+xp = 210
+prerequisites = ["ex11-log-analyzer"]
+unlocks = ["ex13-mission-lookup"]
+
+[[worlds.exercises]]
+id = "ex13-mission-lookup"
+package = "ex13-mission-lookup"
+title = "Mission Lookup"
+skill = "Option type"
+xp = 220
+prerequisites = ["ex12-loot-counter"]
+unlocks = ["ex14-config-loader"]
+
+[[worlds.exercises]]
+id = "ex14-config-loader"
+package = "ex14-config-loader"
+title = "Config Loader"
+skill = "Result and custom errors"
+xp = 240
+prerequisites = ["ex13-mission-lookup"]
+unlocks = ["ex15-salvage-capstone"]
+
+[[worlds.exercises]]
+id = "ex15-salvage-capstone"
+package = "ex15-salvage-capstone"
+title = "Salvage Capstone"
+skill = "All concepts combined"
+xp = 300
+prerequisites = ["ex14-config-loader"]
+unlocks = []

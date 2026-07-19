@@ -1,0 +1,32 @@
+{
+  "agents": {
+    "learning-journey-lead": {
+      "persistent_name": "Mikey",
+      "universe": "The Goonies",
+      "created_at": "2026-07-19T13:55:57.659-07:00",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "rust-engineer": {
+      "persistent_name": "Data",
+      "universe": "The Goonies",
+      "created_at": "2026-07-19T13:55:57.659-07:00",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "game-designer": {
+      "persistent_name": "Mouth",
+      "universe": "The Goonies",
+      "created_at": "2026-07-19T13:55:57.659-07:00",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "challenge-tester": {
+      "persistent_name": "Brand",
+      "universe": "The Goonies",
+      "created_at": "2026-07-19T13:55:57.659-07:00",
+      "legacy_named": false,
+      "status": "active"
+    }
+  }
+}

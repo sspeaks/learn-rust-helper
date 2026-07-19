@@ -1,0 +1,21 @@
+{
+  "universe_usage_history": [
+    {
+      "universe": "The Goonies",
+      "assignment_id": "learn-rust-20260719T135557-0700",
+      "used_at": "2026-07-19T13:55:57.659-07:00"
+    }
+  ],
+  "assignment_cast_snapshots": {
+    "learn-rust-20260719T135557-0700": {
+      "universe": "The Goonies",
+      "agents": {
+        "learning-journey-lead": "Mikey",
+        "rust-engineer": "Data",
+        "game-designer": "Mouth",
+        "challenge-tester": "Brand"
+      },
+      "created_at": "2026-07-19T13:55:57.659-07:00"
+    }
+  }
+}
