@@ -51,12 +51,26 @@ From `src/lib.rs`, the function must:
 - Messages must match exactly (whitespace, punctuation matter).
 - Return type is `&'static str`, not `String` (use literals, not `format!()`).
 
-## Commands to Run
+## How to Work on This Quest
+
+**From inside `nix develop path:.`:**
 
 ```bash
-cargo xtask verify ex03-access-control
-cargo test -p ex03-access-control
-cargo xtask hint ex03-access-control
+# Check your work
+learn check ex03-access-control
+
+# Get a hint if stuck
+learn hint ex03-access-control
+
+# Or see the next hint level
+learn hint ex03-access-control --level 2
+```
+
+**Omit the exercise ID to use your current recommendation:**
+
+```bash
+learn check    # Checks current exercise
+learn hint     # Hints current exercise
 ```
 
 ## XP Reward

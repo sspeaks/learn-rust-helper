@@ -45,12 +45,26 @@ From `src/lib.rs`, the function must:
 - `max_items` is 0 (return empty vector).
 - System names with special characters.
 
-## Commands to Run
+## How to Work on This Quest
+
+**From inside `nix develop path:.`:**
 
 ```bash
-cargo xtask verify ex11-log-analyzer
-cargo test -p ex11-log-analyzer
-cargo xtask hint ex11-log-analyzer
+# Check your work
+learn check ex11-log-analyzer
+
+# Get a hint if stuck
+learn hint ex11-log-analyzer
+
+# Or see the next hint level
+learn hint ex11-log-analyzer --level 2
+```
+
+**Omit the exercise ID to use your current recommendation:**
+
+```bash
+learn check    # Checks current exercise
+learn hint     # Hints current exercise
 ```
 
 ## XP Reward

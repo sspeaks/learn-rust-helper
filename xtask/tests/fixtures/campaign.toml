@@ -1,0 +1,167 @@
+schema_version = 1
+title = "Test Campaign"
+
+[[ranks]]
+id = "rank-cadet"
+name = "Cadet"
+min_xp = 0
+badge = "◊"
+
+[[ranks]]
+id = "rank-pilot"
+name = "Pilot"
+min_xp = 200
+badge = "☆"
+
+[[worlds]]
+id = "world-01-alpha"
+name = "Alpha World"
+theme = "Basics"
+unlock_text = "Start here."
+
+  [[worlds.exercises]]
+  id = "ex01-alpha"
+  package = "ex01-alpha"
+  title = "Alpha"
+  skill = "First skill"
+  xp = 10
+  prerequisites = []
+  unlocks = ["ex02-beta"]
+
+  [[worlds.exercises]]
+  id = "ex02-beta"
+  package = "ex02-beta"
+  title = "Beta"
+  skill = "Second skill"
+  xp = 10
+  prerequisites = ["ex01-alpha"]
+  unlocks = ["ex03-gamma"]
+
+  [[worlds.exercises]]
+  id = "ex03-gamma"
+  package = "ex03-gamma"
+  title = "Gamma"
+  skill = "Third skill"
+  xp = 10
+  prerequisites = ["ex02-beta"]
+  unlocks = []
+
+  [[worlds.exercises]]
+  id = "ex04-delta"
+  package = "ex04-delta"
+  title = "Delta"
+  skill = "Fourth skill"
+  xp = 10
+  prerequisites = []
+  unlocks = []
+
+  [[worlds.exercises]]
+  id = "ex05-epsilon"
+  package = "ex05-epsilon"
+  title = "Epsilon"
+  skill = "Fifth skill"
+  xp = 10
+  prerequisites = []
+  unlocks = []
+
+[[worlds]]
+id = "world-02-beta"
+name = "Beta World"
+theme = "Intermediate"
+unlock_text = "Go deeper."
+
+  [[worlds.exercises]]
+  id = "ex06-zeta"
+  package = "ex06-zeta"
+  title = "Zeta"
+  skill = "Sixth skill"
+  xp = 10
+  prerequisites = []
+  unlocks = []
+
+  [[worlds.exercises]]
+  id = "ex07-eta"
+  package = "ex07-eta"
+  title = "Eta"
+  skill = "Seventh skill"
+  xp = 10
+  prerequisites = []
+  unlocks = []
+
+  [[worlds.exercises]]
+  id = "ex08-theta"
+  package = "ex08-theta"
+  title = "Theta"
+  skill = "Eighth skill"
+  xp = 10
+  prerequisites = []
+  unlocks = []
+
+  [[worlds.exercises]]
+  id = "ex09-iota"
+  package = "ex09-iota"
+  title = "Iota"
+  skill = "Ninth skill"
+  xp = 10
+  prerequisites = []
+  unlocks = []
+
+  [[worlds.exercises]]
+  id = "ex10-kappa"
+  package = "ex10-kappa"
+  title = "Kappa"
+  skill = "Tenth skill"
+  xp = 10
+  prerequisites = []
+  unlocks = []
+
+[[worlds]]
+id = "world-03-gamma"
+name = "Gamma World"
+theme = "Advanced"
+unlock_text = "Master it all."
+
+  [[worlds.exercises]]
+  id = "ex11-lambda"
+  package = "ex11-lambda"
+  title = "Lambda"
+  skill = "Eleventh skill"
+  xp = 10
+  prerequisites = []
+  unlocks = []
+
+  [[worlds.exercises]]
+  id = "ex12-mu"
+  package = "ex12-mu"
+  title = "Mu"
+  skill = "Twelfth skill"
+  xp = 10
+  prerequisites = []
+  unlocks = []
+
+  [[worlds.exercises]]
+  id = "ex13-nu"
+  package = "ex13-nu"
+  title = "Nu"
+  skill = "Thirteenth skill"
+  xp = 10
+  prerequisites = []
+  unlocks = []
+
+  [[worlds.exercises]]
+  id = "ex14-xi"
+  package = "ex14-xi"
+  title = "Xi"
+  skill = "Fourteenth skill"
+  xp = 10
+  prerequisites = []
+  unlocks = []
+
+  [[worlds.exercises]]
+  id = "ex15-omicron"
+  package = "ex15-omicron"
+  title = "Omicron"
+  skill = "Fifteenth skill"
+  xp = 10
+  prerequisites = []
+  unlocks = []

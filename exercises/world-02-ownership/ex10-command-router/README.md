@@ -50,12 +50,26 @@ From `src/lib.rs`, the function must:
 - Bay number or window number boundary values (0, 255).
 - Abort command (no associated data).
 
-## Commands to Run
+## How to Work on This Quest
+
+**From inside `nix develop path:.`:**
 
 ```bash
-cargo xtask verify ex10-command-router
-cargo test -p ex10-command-router
-cargo xtask hint ex10-command-router
+# Check your work
+learn check ex10-command-router
+
+# Get a hint if stuck
+learn hint ex10-command-router
+
+# Or see the next hint level
+learn hint ex10-command-router --level 2
+```
+
+**Omit the exercise ID to use your current recommendation:**
+
+```bash
+learn check    # Checks current exercise
+learn hint     # Hints current exercise
 ```
 
 ## XP Reward

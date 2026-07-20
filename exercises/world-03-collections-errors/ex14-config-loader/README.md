@@ -56,12 +56,26 @@ From `src/lib.rs`, the function must:
 - Unknown keys mixed with valid ones.
 - Extra whitespace around key or value.
 
-## Commands to Run
+## How to Work on This Quest
+
+**From inside `nix develop path:.`:**
 
 ```bash
-cargo xtask verify ex14-config-loader
-cargo test -p ex14-config-loader
-cargo xtask hint ex14-config-loader
+# Check your work
+learn check ex14-config-loader
+
+# Get a hint if stuck
+learn hint ex14-config-loader
+
+# Or see the next hint level
+learn hint ex14-config-loader --level 2
+```
+
+**Omit the exercise ID to use your current recommendation:**
+
+```bash
+learn check    # Checks current exercise
+learn hint     # Hints current exercise
 ```
 
 ## XP Reward

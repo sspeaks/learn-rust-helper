@@ -13,77 +13,87 @@ Welcome to **learn-rust**, a progression-based campaign that teaches Rust throug
     experimental-features = nix-command flakes
     ```
 
-### Enter the Development Environment
+### Enter the Development Environment & Start
 
 ```bash
-# Enter a shell with Rust, Cargo, and tools ready
+# Enter the dev shell
 nix develop path:.
 
-# (Optional) Use direnv to auto-enter the dev shell on cd
-# nix flake update  # in this repo, once
-# echo "use flake" > .envrc && direnv allow
+# Run learn with no arguments to see your dashboard and next quest
+learn
 ```
 
-Once inside the dev shell, all standard Cargo commands work. Alternatively, run commands without entering the shell:
+That's it. After you run `learn`, you'll see:
+- Your current rank and XP
+- Your progress through each world
+- The recommended quest to work on next
+
+### The Learner's Loop
+
+Once you're in the dev shell:
+
+1. **See your quest:** `learn` (shows dashboard and current recommendation)
+2. **Work on it:** Edit `exercises/worldN/exNN-name/src/lib.rs` using your editor
+3. **Check your work:** `learn check` (or `learn check <id>` for a specific exercise)
+4. **Need a nudge?** `learn hint` (or `learn hint <id>` to specify which one)
+
+That's the whole workflow. No Cargo commands to memorize.
+
+### Alternative: Run Commands Without Entering the Shell
+
+If you prefer one-liners, you can run any command with `nix develop path:. -c`:
 
 ```bash
-# Check compilation (without entering shell)
-nix develop path:. -c cargo check --workspace
-
-# Run xtask commands (without entering shell)
-nix develop path:. -c cargo xtask status
+nix develop path:. -c learn status
+nix develop path:. -c learn check ex01-format-scoreboard
 ```
 
-### Your First Quest
+### (Optional) Auto-Load the Dev Shell
+
+Use direnv to automatically enter the shell when you `cd` into this repo:
 
 ```bash
-# Option 1: Enter dev shell, then run commands (recommended during development)
-nix develop path:.
-cargo check --workspace
-cargo xtask verify ex01-format-scoreboard
-cargo xtask hint ex01-format-scoreboard
-
-# Option 2: Run commands directly from outside the shell (one-liner style)
-nix develop path:. -c cargo xtask verify ex01-format-scoreboard
-nix develop path:. -c cargo xtask hint ex01-format-scoreboard
-
-# Both options print the same output. Inside the shell, you can chain commands:
-cargo check --workspace
-cat exercises/world-01-foundations/ex01-format-scoreboard/README.md
-# Edit the stub (exercises/world-01-foundations/ex01-format-scoreboard/src/lib.rs)
-cargo test -p ex01-format-scoreboard
-cargo xtask status
+echo "use flake" > .envrc
+direnv allow
 ```
 
-## Command Reference
+Then just `cd learn-rust` and the shell loads automatically.
 
-**Inside the dev shell** (`nix develop path:.`):
+## The `learn` Command Reference
+
+**Inside the dev shell** (`nix develop path:.`), use these commands:
 
 | Command | Purpose |
 |---------|---------|
-| `cargo xtask status` | Display current XP, rank, and progress |
-| `cargo xtask next` | Get a recommendation for the next exercise |
-| `cargo xtask verify <id>` | Run tests for a specific exercise |
-| `cargo xtask hint <id> [--level N]` | Show next hint; optionally force hint N (1–3) |
-| `cargo test -p <id>` | Run exercise tests directly with Cargo |
-| `cargo check --workspace` | Verify everything still compiles |
+| `learn` | Show dashboard: rank, XP, progress, and next quest |
+| `learn status` | Same as `learn` (show progress) |
+| `learn check [id]` | Run tests for a specific exercise (or current) and update progress |
+| `learn next` | Get a recommendation for the next uncompleted exercise |
+| `learn hint [id]` | Show the next hint for an exercise (or current); use `--level N` to jump to hint 1, 2, or 3 |
 
-**From outside the shell**, prefix commands with `nix develop path:. -c`:
+**Examples:**
 
 ```bash
-nix develop path:. -c cargo check --workspace
-nix develop path:. -c cargo xtask verify ex01-format-scoreboard
-nix develop path:. -c cargo test -p ex01-format-scoreboard
+# Show your current progress and recommended next quest
+learn
+
+# Check your work on the current (recommended) exercise
+learn check
+
+# Check a specific exercise by name
+learn check ex01-format-scoreboard
+
+# Get a hint for the current exercise
+learn hint
+
+# Jump to hint level 3 for a specific exercise
+learn hint ex02-reactor-calibration --level 3
+
+# Get the next recommendation without checking progress
+learn next
 ```
 
-**Build artifacts** with Nix:
-
-| Command | Purpose |
-|---------|---------|
-| `nix develop path:.` | Enter interactive dev shell (dependencies installed) |
-| `nix develop path:. -c <cmd>` | Run a command in the dev shell without entering it |
-| `nix build path:.` | Build the workspace; produces `result/bin/xtask` binary |
-| `nix flake check path:.` | Check compilation and xtask internal tests (does not run unfinished exercise tests) |
+**ID defaults:** When you omit an exercise ID (e.g., `learn check` instead of `learn check ex01-format-scoreboard`), the `learn` command uses your currently recommended exercise. This keeps commands short and focused.
 
 ## The Campaign Map
 
@@ -141,7 +151,7 @@ Build with real data structures: vectors, hash maps, Option, Result, and custom 
 
 ### Starter State
 
-When you clone this repo, `cargo check --workspace` passes. Each exercise compiles but has **intentional test failures**—you'll see `#[test]` functions fail with clear error messages as you work. This is by design. There are no ignored tests (no `#[ignore]`).
+When you clone this repo, each exercise compiles but has **intentional test failures**. When you run `learn check` on a fresh exercise, you'll see a failure message—this is by design. Starter stubs use `todo!()` and intentionally panic. Fill in the stubs, and tests pass.
 
 ### Editing
 
@@ -149,23 +159,25 @@ Each exercise has a **single stub file**: `exercises/worldN/exNN-name/src/lib.rs
 
 ### Verification
 
-```bash
-# Direct Cargo (always works):
-cargo test -p ex01-format-scoreboard
+Use the `learn` command to check your work:
 
-# Or through xtask (tracks XP):
-cargo xtask verify ex01-format-scoreboard
+```bash
+# Check the current (recommended) exercise
+learn check
+
+# Check a specific exercise by name
+learn check ex01-format-scoreboard
 ```
 
-Both run the same tests. Using `cargo xtask verify` also saves your progress and awards XP on first completion.
+`learn check` runs the tests and, on success, saves your progress and awards XP. It's the primary way to verify your implementation.
 
 ### Progress Tracking
 
-Progress lives in `.learn-rust/progress.toml` (gitignored—local only). Your history is yours, never synced or shared. Reset with:
+Your progress lives in `.learn-rust/progress.toml` (gitignored—local only). Your history is yours, never synced or shared. To reset and start fresh:
 
 ```bash
 rm .learn-rust/progress.toml
-cargo xtask status  # Starts fresh
+learn status  # Starts over
 ```
 
 ### Hints
@@ -173,16 +185,19 @@ cargo xtask status  # Starts fresh
 Each exercise has **three progressive hints**. The first is a question or concept nudge. The second names tools and types. The third gives pseudocode or a structural outline—never valid Rust, never a completed solution.
 
 ```bash
-# Show the next unhinted level for this exercise
-cargo xtask hint ex01-format-scoreboard
+# Show the next unhinted level for the current exercise
+learn hint
 
-# Jump directly to hint N (1–3)
-cargo xtask hint ex01-format-scoreboard --level 3
+# Show a hint for a specific exercise
+learn hint ex01-format-scoreboard
+
+# Jump directly to hint level 3
+learn hint ex01-format-scoreboard --level 3
 ```
 
-### Prerequisites & Recommendations
+### Exercise Order
 
-Exercise order is a **recommendation**, not a hard gate. You can skip ahead, but each exercise builds on concepts from earlier ones. `cargo xtask next` suggests what to do next based on XP and completion.
+The order in which exercises appear is a **recommendation**, not a hard requirement. You can skip ahead if you like, but each exercise builds on concepts from earlier ones. Use `learn next` to get a personalized recommendation based on your completion and XP.
 
 ## Workspace Verification
 
@@ -192,23 +207,17 @@ After installing Nix and enabling flakes, verify the workspace:
 # Check that Rust and Cargo compile without errors
 nix develop path:. -c cargo check --workspace
 
-# Verify xtask and workspace tests (does NOT run unfinished exercise tests)
+# Verify workspace compilation and internal tool tests
 nix flake check path:.
 ```
 
-The xtask internal tests pass. Exercise tests intentionally fail on starter stubs (see "Expected Starter Behavior" below).
+Workspace tests pass. Exercise tests intentionally fail on starter stubs until you implement them (see "Expected Starter Behavior" below).
 
 ## Expected Starter Behavior
 
-On a fresh clone, inside the dev shell or via `nix develop path:. -c`:
+On a fresh clone, when you run `learn check` on an exercise, you'll see:
 
 ```
-$ cargo check --workspace
-   Compiling ex01-format-scoreboard v0.1.0
-   ...
-   Finished dev [unoptimized + debuginfo] target(s) in 0.25s
-
-$ cargo test -p ex01-format-scoreboard 2>&1 | head -20
 running 1 test
 test tests::test_format_line ... FAILED
 
@@ -217,7 +226,37 @@ thread 'tests::test_format_line' panicked at 'not yet implemented: Format a scor
     (expected failure; implement the stub to proceed)
 ```
 
-This is normal. Starter stubs use `todo!()` and **intentionally panic**. You're meant to see failures. Fill in the stubs, and tests pass. The `nix flake check` command checks workspace compilation and xtask tests only (not learner exercise tests, which are expected to fail until you implement them).
+This is normal. Starter stubs use `todo!()` and intentionally panic. Fill in the stub in `src/lib.rs`, then run `learn check` again to verify your implementation.
+
+## Advanced: Under the Hood (Cargo Compatibility)
+
+The `learn` command is your primary interface. However, if you want to work directly with Cargo (for example, in an IDE, in a CI/CD pipeline, or for debugging), these commands are equivalent and always available:
+
+| Learn | Cargo equivalent | Purpose |
+|-------|------------------|---------|
+| `learn check ex01-format-scoreboard` | `cargo test -p ex01-format-scoreboard` | Run tests directly (does not save progress or award XP) |
+| `learn status` | `cargo xtask status` | Show XP and rank |
+| `learn next` | `cargo xtask next` | Get next recommendation |
+| `learn hint ex01-format-scoreboard` | `cargo xtask hint ex01-format-scoreboard` | Show hint for exercise |
+
+Use `cargo xtask verify <id>` if you need tests to run **and** save progress/XP (equivalent to `learn check` with side effects).
+
+**Workspace compilation:**
+
+```bash
+# Check that everything compiles (from inside shell or with nix develop path:. -c)
+cargo check --workspace
+```
+
+**Direct Cargo example** (from inside the shell):
+
+```bash
+cargo test -p ex01-format-scoreboard
+cargo check --workspace
+cargo xtask status
+```
+
+This section exists for compatibility and advanced use. **For learning, use `learn`.**
 
 ## API Contracts
 

@@ -45,12 +45,26 @@ Example: `["gold", "silver", "gold"]` → `{"gold": 2, "silver": 1}`
 - All items unique.
 - Case sensitivity: `"Gold"` and `"gold"` are different keys.
 
-## Commands to Run
+## How to Work on This Quest
+
+**From inside `nix develop path:.`:**
 
 ```bash
-cargo xtask verify ex12-loot-counter
-cargo test -p ex12-loot-counter
-cargo xtask hint ex12-loot-counter
+# Check your work
+learn check ex12-loot-counter
+
+# Get a hint if stuck
+learn hint ex12-loot-counter
+
+# Or see the next hint level
+learn hint ex12-loot-counter --level 2
+```
+
+**Omit the exercise ID to use your current recommendation:**
+
+```bash
+learn check    # Checks current exercise
+learn hint     # Hints current exercise
 ```
 
 ## XP Reward

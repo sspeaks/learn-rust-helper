@@ -47,12 +47,26 @@ From `src/lib.rs`, the function must:
 - Integer division truncates (e.g., 3 / 2 = 1, not 1.5).
 - Large values may overflow i32; tests use reasonable ranges.
 
-## Commands to Run
+## How to Work on This Quest
+
+**From inside `nix develop path:.`:**
 
 ```bash
-cargo xtask verify ex02-reactor-calibration
-cargo test -p ex02-reactor-calibration
-cargo xtask hint ex02-reactor-calibration
+# Check your work
+learn check ex02-reactor-calibration
+
+# Get a hint if stuck
+learn hint ex02-reactor-calibration
+
+# Or see the next hint level
+learn hint ex02-reactor-calibration --level 2
+```
+
+**Omit the exercise ID to use your current recommendation:**
+
+```bash
+learn check    # Checks current exercise
+learn hint     # Hints current exercise
 ```
 
 ## XP Reward

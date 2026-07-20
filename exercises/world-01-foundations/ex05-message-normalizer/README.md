@@ -44,12 +44,26 @@ Example: `"  alpha   bravo  "` → `"ALPHA BRAVO"`
 - Input may be all spaces (normalize to empty string).
 - Unicode characters should be preserved (if any).
 
-## Commands to Run
+## How to Work on This Quest
+
+**From inside `nix develop path:.`:**
 
 ```bash
-cargo xtask verify ex05-message-normalizer
-cargo test -p ex05-message-normalizer
-cargo xtask hint ex05-message-normalizer
+# Check your work
+learn check ex05-message-normalizer
+
+# Get a hint if stuck
+learn hint ex05-message-normalizer
+
+# Or see the next hint level
+learn hint ex05-message-normalizer --level 2
+```
+
+**Omit the exercise ID to use your current recommendation:**
+
+```bash
+learn check    # Checks current exercise
+learn hint     # Hints current exercise
 ```
 
 ## XP Reward

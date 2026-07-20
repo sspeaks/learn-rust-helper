@@ -47,12 +47,26 @@ From `src/lib.rs`, the function must:
 - Multiple missions with the same code (match first).
 - Empty mission list.
 
-## Commands to Run
+## How to Work on This Quest
+
+**From inside `nix develop path:.`:**
 
 ```bash
-cargo xtask verify ex13-mission-lookup
-cargo test -p ex13-mission-lookup
-cargo xtask hint ex13-mission-lookup
+# Check your work
+learn check ex13-mission-lookup
+
+# Get a hint if stuck
+learn hint ex13-mission-lookup
+
+# Or see the next hint level
+learn hint ex13-mission-lookup --level 2
+```
+
+**Omit the exercise ID to use your current recommendation:**
+
+```bash
+learn check    # Checks current exercise
+learn hint     # Hints current exercise
 ```
 
 ## XP Reward

@@ -60,12 +60,26 @@ From `src/lib.rs`, the methods must:
 - New members at level 0.
 - Roles and names with spaces or special characters.
 
-## Commands to Run
+## How to Work on This Quest
+
+**From inside `nix develop path:.`:**
 
 ```bash
-cargo xtask verify ex09-station-crew
-cargo test -p ex09-station-crew
-cargo xtask hint ex09-station-crew
+# Check your work
+learn check ex09-station-crew
+
+# Get a hint if stuck
+learn hint ex09-station-crew
+
+# Or see the next hint level
+learn hint ex09-station-crew --level 2
+```
+
+**Omit the exercise ID to use your current recommendation:**
+
+```bash
+learn check    # Checks current exercise
+learn hint     # Hints current exercise
 ```
 
 ## XP Reward

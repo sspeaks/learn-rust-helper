@@ -56,17 +56,26 @@ From `src/lib.rs`, the function must:
 - Player names can contain spaces, punctuation, and Unicode.
 - Ranks are 1-indexed (first player is rank 1, not 0).
 
-## Commands to Run
+## How to Work on This Quest
+
+**From inside `nix develop path:.`:**
 
 ```bash
-# Verify your implementation
-cargo xtask verify ex01-format-scoreboard
-
-# Or use Cargo directly
-cargo test -p ex01-format-scoreboard
+# Check your work
+learn check ex01-format-scoreboard
 
 # Get a hint if stuck
-cargo xtask hint ex01-format-scoreboard
+learn hint ex01-format-scoreboard
+
+# Or see the next hint level
+learn hint ex01-format-scoreboard --level 2
+```
+
+**Omit the exercise ID to use your current recommendation:**
+
+```bash
+learn check    # Checks current exercise
+learn hint     # Hints current exercise
 ```
 
 ## XP Reward
@@ -79,8 +88,7 @@ None—this is the first quest.
 
 ## Success Criteria
 
-- `cargo check --workspace` passes (should already).
-- `cargo test -p ex01-format-scoreboard` runs all tests and all pass.
+- `learn check ex01-format-scoreboard` runs all tests and all pass.
 - Player names, ranks, and scores display in the exact format.
 - Negative scores display correctly.
 

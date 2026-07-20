@@ -29,6 +29,7 @@
               rustfmt
               clippy
               rust-analyzer
+              self.packages.${system}.default
             ];
             # Helps rust-analyzer and IDEs locate standard-library source.
             RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
@@ -37,33 +38,33 @@
       );
 
       # ── Packages ──────────────────────────────────────────────────────
-      # `nix build path:.` produces the xtask runner binary.
+      # `nix build path:.` produces the learn runner binary.
       packages = forAllSystems (system:
         let pkgs = pkgsFor system; in {
           default = pkgs.rustPlatform.buildRustPackage {
-            pname = "xtask";
+            pname = "learn";
             version = "0.1.0";
             src = ./.;
             cargoLock.lockFile = ./Cargo.lock;
-            # Build only xtask; exercise stubs are intentionally todo!().
-            cargoBuildFlags = [ "--package" "xtask" ];
+            # Build only the learn binary from the xtask package.
+            cargoBuildFlags = [ "--package" "xtask" "--bin" "learn" ];
             # Exercise tests use todo!() stubs and must not run here.
             doCheck = false;
             meta = with pkgs.lib; {
               description = "Runner for the learn-rust gamified Rust campaign";
               license = licenses.mit;
-              mainProgram = "xtask";
+              mainProgram = "learn";
             };
           };
         }
       );
 
       # ── Apps ──────────────────────────────────────────────────────────
-      # `nix run path:.` invokes the xtask binary directly.
+      # `nix run path:.` invokes the learn binary directly.
       apps = forAllSystems (system: {
         default = {
           type = "app";
-          program = "${self.packages.${system}.default}/bin/xtask";
+          program = "${self.packages.${system}.default}/bin/learn";
         };
       });
 

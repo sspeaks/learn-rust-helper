@@ -45,12 +45,26 @@ From `src/lib.rs`, the function must:
 - Turret charge goes below 0 (handle the boundary).
 - Multiple turrets with different states.
 
-## Commands to Run
+## How to Work on This Quest
+
+**From inside `nix develop path:.`:**
 
 ```bash
-cargo xtask verify ex08-borrow-checkpoint
-cargo test -p ex08-borrow-checkpoint
-cargo xtask hint ex08-borrow-checkpoint
+# Check your work
+learn check ex08-borrow-checkpoint
+
+# Get a hint if stuck
+learn hint ex08-borrow-checkpoint
+
+# Or see the next hint level
+learn hint ex08-borrow-checkpoint --level 2
+```
+
+**Omit the exercise ID to use your current recommendation:**
+
+```bash
+learn check    # Checks current exercise
+learn hint     # Hints current exercise
 ```
 
 ## XP Reward

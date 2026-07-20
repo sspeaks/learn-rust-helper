@@ -2,6 +2,275 @@
 
 ## Active Decisions
 
+### 2026-07-20: Final Re-Review — CLI & Test Artifacts (Cycle 3) — ✅ APPROVED
+
+**By:** Mikey (Learning Journey Lead)
+**Ceremony:** Mandatory Re-Review (cycle 3 — post-incident recovery)
+**Timestamp:** 2026-07-20T13:16:00-07:00
+
+---
+
+## VERDICT: ✅ APPROVE
+
+The prior conditional rejection (cycle 1 — rustfmt diffs in Brand-authored test files) is **fully resolved**. Data independently recreated and formatted the test artifacts. All gating criteria pass on the current working tree.
+
+---
+
+## Validation Evidence
+
+| Check | Result | Detail |
+|-------|--------|--------|
+| `cargo fmt --all -- --check` | ✅ Pass | Exit 0, no diffs |
+| `cargo check --workspace` | ✅ Pass | Warnings only from exercise `todo!()` stubs (expected) |
+| `cargo test --package xtask` | ✅ 7 unit + 17 integration | All 24 tests pass |
+| `nix flake check path:.` | ✅ Pass | workspace-check + xtask-tests derivations succeed |
+| `nix build path:.` | ✅ Pass | Produces `result/bin/learn` (1.7 MB) |
+| `nix run path:. -- next` | ✅ Pass | Outputs `ex01-format-scoreboard`, exit 0 |
+| `nix run path:. -- status` | ✅ Pass | Correct dashboard output |
+| `cargo xtask status` | ✅ Pass | Legacy alias works, correct output |
+| No-arg dashboard | ✅ Pass | Rank, XP, world counts, recommended quest, key commands |
+| Progress isolation | ✅ Confirmed | `.learn-rust/progress.toml` never created by any test or CLI run |
+| `tempfile` dev-dep | ✅ Justified | Used by `TempWorkspace` in `support/mod.rs` for isolated test dirs |
+| Cargo.lock changes | ✅ Justified | Adds `tempfile` + transitive deps only |
+| Exercise READMEs (all 15) | ✅ Pass | Use `learn check`/`learn hint`, zero `cargo xtask` references |
+| Root README | ✅ Pass | Nix-only setup, `learn`-first, Cargo demoted to Advanced section |
+| Test artifacts | ✅ Clean | 17 behavioral black-box tests, no solution leaks, proper `TempDir` isolation |
+| `cargo xtask verify` compat | ✅ Confirmed | Test #17 validates; binary accepts `verify` as alias for `check` |
+
+## Incident Resolution
+
+- Brand's original test files had 6 rustfmt diffs → conditional rejection (cycle 1).
+- Brand locked out. Data assigned as independent revision owner.
+- Accidental `git checkout . && git clean -fd` erased all uncommitted work (violates no-destructive-git policy).
+- Mouth replayed docs. Data restored implementation and independently recreated test artifacts from the approved public behavior contract.
+- Data formatted all code. `cargo fmt --all -- --check` now passes clean.
+- The formatting rejection is fully resolved. No prior evidence was reused; all checks re-executed on the current working tree.
+
+## Authorship
+
+| Surface | Author | Status |
+|--------|--------|--------|
+| `xtask/src/lib.rs`, `xtask/src/main.rs`, `xtask/Cargo.toml` | Data | ✅ Approved |
+| `xtask/tests/cli.rs`, `xtask/tests/support/mod.rs` | Data (independent recreation) | ✅ Approved |
+| `xtask/tests/fixtures/**` | Data | ✅ Approved |
+| `.cargo/config.toml`, `flake.nix`, `Cargo.lock` | Data | ✅ Approved |
+| `README.md` (root), 15× exercise `README.md` | Mouth | ✅ Approved |
+
+---
+
+### 2026-07-20: Final Review — Guided Campaign CLI (`learn`)
+
+**By:** Mikey (Learning Journey Lead)  
+**Ceremony:** Final Coherence & Correctness Review  
+**Timestamp:** 2026-07-20T12:46:00-07:00  
+**Cycle:** Cycle 1 (superseded by Cycle 3 re-review above)
+
+---
+
+## Verdict: ⚠️ CONDITIONAL REJECT — Rustfmt Formatting (Resolved)
+
+### Summary
+
+The implementation was functionally correct and fully met the approved contract. All behavior was validated. Gating criterion failed: `cargo fmt --all -- --check` reported 6 formatting diffs in Brand's test files. **This has been resolved by Data's independent recreation and formatting in Cycle 3 re-review.**
+
+### Conditional Rejection Reason (Now Resolved)
+
+**File(s):** `xtask/tests/cli.rs`, `xtask/tests/support/mod.rs`  
+**Author:** Brand  
+**Reason:** `cargo fmt --all -- --check` failed with 6 diffs (line length, argument formatting, method chain formatting).
+
+### Resolution
+
+**Assigned to:** Data (per lockout map)  
+**Action Taken:** Independently recreated test artifacts from the approved behavioral contract; applied formatting; confirmed `cargo fmt --all -- --check` passes clean.
+
+### Status: ✅ RESOLVED (Cycle 3 re-review)
+
+---
+
+### 2026-07-20T12:22:07.761-07:00: Implemented guided `learn` CLI end to end
+
+**By:** Data (Rust Engineer)
+**What:** Replaced the `xtask`-named binary and `verify`-only command set with the full `learn` CLI as approved by Design Review.
+**Why:** Learners needed a single entry point that makes the next useful action obvious without requiring knowledge of raw Cargo commands.
+
+#### Changes made
+
+**`xtask/Cargo.toml`** — Added `[[bin]] name = "learn"` so the binary is named `learn`.
+
+**`xtask/src/lib.rs`** — Full CLI rewrite:
+- `Cli.command` is now `Option<Commands>`; no subcommand → `cmd_dashboard` (compact XP/rank/world progress + recommended next + guidance)
+- Added `Commands::Check { id: Option<String> }` — optional ID defaults to next recommended exercise; test failures print a `learn hint` nudge and exit 1 silently (no redundant "error:" line)
+- `Commands::Verify { id: String }` retained as legacy alias; delegates to `cmd_check`
+- `Commands::Hint { id: Option<String>, level: Option<u8> }` — both optional; auto-advance logic reads `hints_viewed[exercise_id]` and bumps by 1 (capped at 3) when no `--level`; explicit `--level` overrides; persists new high-water mark in progress file
+- `Commands::Status` and `Commands::Next` output unchanged
+- `ProgressFile` gains `hints_viewed: HashMap<String, u8>` with `#[serde(default, skip_serializing_if = "HashMap::is_empty")]` — fully backward-compatible
+- `XtaskError::CheckFailed` added — silent sentinel so `main.rs` exits 1 without reprinting the error
+
+**`xtask/src/main.rs`** — Suppresses the "error:" print for `XtaskError::CheckFailed` (cargo output already explains the failure).
+
+**`.cargo/config.toml`** — Alias updated: `xtask = "run --package xtask --bin learn --"` (was `run --package xtask --`); preserves all `cargo xtask` invocations.
+
+**`flake.nix`** — `pname`/`mainProgram` → `"learn"`; `cargoBuildFlags` adds `--bin learn`; apps `program` → `bin/learn`; devShell includes `self.packages.${system}.default` so `learn` is on PATH inside `nix develop`.
+
+#### Validation (Cycle 1)
+
+- `cargo test --package xtask` — 7 unit tests + 17 integration tests pass
+- `cargo fmt --package xtask -- --check` — clean
+- `cargo check --workspace` — clean (exercise stub warnings are pre-existing)
+- `learn` (no args) — compact dashboard renders correctly
+- `learn check ex01-format-scoreboard` — test output flows through, hint nudge printed, exit 1, no double error message
+- `learn status`, `learn next`, `learn verify ex99-unknown`, `learn hint --level 5` — all behave as specified
+- `cargo xtask status`, `cargo xtask next` — legacy alias works
+
+---
+
+### 2026-07-20: Adopt learner-facing `learn` CLI over raw `cargo xtask`
+**By:** Data
+**What:** Keep the implementation crate in `xtask/`, but make the primary learner-facing binary `learn`, available automatically in `nix develop`, with no-arg behavior showing the current quest dashboard. Keep `cargo xtask` as a compatibility alias and preserve `.learn-rust/progress.toml` unchanged.
+**Why:** The learner specifically found `cargo xtask` plus explicit exercise IDs confusing. This keeps the internal Rust workspace stable while giving a simpler command surface: `learn`, `learn show`, `learn verify`, `learn hint`, `learn next`, and `learn status`, with omitted exercise IDs resolving to the recommended current exercise.
+
+---
+
+### 2026-07-20: Design Review — Guided Campaign CLI (`learn`)
+
+**By:** Mikey (Learning Journey Lead)
+**Ceremony:** Design Review
+**Requested by:** sspeaks610
+**Participants:** Data (Rust Engineer), Mouth (Game Designer), Brand (Challenge Tester)
+**Timestamp:** 2026-07-20T12:22:07-07:00
+
+---
+
+## Trigger
+
+User feedback: "There should be an intuitive cli to progress through the game rather than running the cargo commands... they're confusing to me."
+
+---
+
+## Approved Contract
+
+### 1. Primary Invocation
+
+**Binary name:** `learn`
+
+**Rationale:** The repository is `learn-rust`; typing `learn` is the most discoverable, memorable, and self-documenting entry point. Quest/adventure theme lives in output copy, not the command name.
+
+**Availability:**
+- Inside `nix develop path:.`: binary is on PATH (added to devShell packages from the built flake package)
+- Outside: `nix run path:. -- <subcommand>`
+- Fallback: `cargo xtask <subcommand>` continues to work via `.cargo/config.toml` alias
+
+### 2. Command Set
+
+| Command | Behavior | Exercise ID |
+|---------|----------|-------------|
+| `learn` (no args) | Dashboard: rank badge + XP, world progress summary, current recommended exercise with file paths, 3 key next-step commands | — |
+| `learn check [id]` | Run tests for exercise; update progress on pass. Defaults to `next` exercise if ID omitted. | Optional |
+| `learn hint [id] [--level N]` | Show hint. Defaults to current exercise; auto-increments to next unseen level. `--level` overrides. | Optional |
+| `learn status` | Full progress: XP, rank, all worlds, recommendation | — |
+| `learn next` | One-line output: next exercise ID (script-friendly) | — |
+
+**No-argument behavior:** Print a compact "Mission Control" dashboard:
+```
+◊ Cadet — 0 XP
+
+  Foundations:  0/5
+  Ownership:    0/5
+  Collections:  0/5
+
+▶ Next quest: ex01-format-scoreboard — Format Scoreboard
+  Edit: exercises/world-01-foundations/ex01-format-scoreboard/src/lib.rs
+
+  learn check    — verify your solution
+  learn hint     — get a nudge
+  learn status   — full progress map
+```
+
+### 3. Output & Error Behavior
+
+- **Success (check passes):** `✅ ex01-format-scoreboard complete! +100 XP (total: 100). Next: ex02-reactor-calibration`
+- **Already complete:** `✅ ex01-format-scoreboard verified again. XP unchanged (total: 100).`
+- **Failure (tests fail):** Exit 1. Show `❌ Tests failed for ex01-format-scoreboard. Try: learn hint` (test output passes through from cargo)
+- **Unknown exercise:** Exit 1. Stderr: `error: unknown exercise id: <id>`. No fuzzy matching in v1.
+- **Invalid hint level:** Exit 1. Stderr: `error: hint level must be 1, 2, or 3 (got N)`
+
+Color/ANSI: Use when stdout is a TTY; plain text otherwise. Rank badges always shown (they're UTF-8, not ANSI).
+
+### 4. Progress & Campaign Interactions
+
+- **Progress file:** `.learn-rust/progress.toml` — schema unchanged (v1). No migration needed.
+- **Campaign metadata:** `campaign.toml` — read-only, schema unchanged.
+- **Hint tracking:** Store last-viewed hint level per exercise in progress file (new optional field `[hints_viewed]` map). Backward compatible: missing field means all hints unseen.
+- **No solutions exposed:** Hints display file content; no exercise source shown in CLI output.
+
+### 5. Compatibility
+
+- `cargo xtask verify/status/next/hint` continues to work via `.cargo/config.toml`:
+  ```toml
+  [alias]
+  xtask = "run --package xtask --bin learn --"
+  ```
+- Old progress files work with new binary (additive schema: new `[hints_viewed]` section is optional).
+- `nix build path:.` produces `result/bin/learn` (renamed from `xtask`).
+- `nix run path:.` invokes `learn`.
+
+### 6. Implementation Plan (Nix-only toolchain preserved)
+
+| Change | File(s) |
+|--------|---------|
+| Rename binary | `xtask/Cargo.toml`: add `[[bin]] name = "learn", path = "src/main.rs"` |
+| Update clap CLI | `xtask/src/lib.rs`: new `Commands` enum with `check/hint/status/next`, no-subcommand dashboard |
+| Add cargo alias | `.cargo/config.toml` (new file) |
+| Update flake | `flake.nix`: `pname = "learn"`, `mainProgram = "learn"`, add to devShell packages |
+| Add hint tracking | `xtask/src/lib.rs`: `ProgressFile` gains optional `hints_viewed: HashMap<String, u8>` |
+
+---
+
+## File Ownership (Non-Overlapping)
+
+| Agent | Owns | Deliverables |
+|-------|------|-------------|
+| **Data** | All Rust implementation + Nix + Cargo config | `xtask/Cargo.toml`, `xtask/src/main.rs`, `xtask/src/lib.rs`, `flake.nix`, `.cargo/config.toml`, `Cargo.lock` |
+| **Mouth** | Learner-facing docs + campaign metadata | `README.md` (root), exercise `README.md` files (update command references), `campaign.toml` (if schema bump needed) |
+| **Brand** | All test code | `xtask/tests/cli.rs`, `xtask/tests/support/`, `xtask/tests/fixtures/` |
+
+---
+
+## Acceptance Tests (Brand owns — later revised by Data)
+
+### Required test matrix:
+
+| Test ID | Input | Assertion |
+|---------|-------|-----------|
+| `no_args_dashboard` | `learn` | Exit 0; stdout contains XP line, recommended exercise, and command hints |
+| `status_fresh` | `learn status` | Exit 0; XP: 0, 0/5 per world, recommendation shown |
+| `next_fresh` | `learn next` | Exit 0; stdout contains `ex01-format-scoreboard` |
+| `check_success` | `learn check ex01-format-scoreboard` (fake cargo passes) | Exit 0; progress.toml created with XP 100 |
+| `check_default_id` | `learn check` (no ID, fresh) | Resolves to ex01; same behavior as explicit ID |
+| `check_failure` | `learn check ex01-format-scoreboard` (fake cargo fails) | Exit 1; no progress write |
+| `check_idempotent` | Run check twice on same exercise | Second run: XP unchanged, no duplicates |
+| `hint_default_level` | `learn hint ex01-format-scoreboard` | Exit 0; shows hint1 content |
+| `hint_auto_increment` | `learn hint` after hint1 viewed | Shows hint2; hints_viewed updated |
+| `hint_explicit_level` | `learn hint ex01-format-scoreboard --level 3` | Exit 0; shows hint3 |
+| `hint_unknown_id` | `learn hint ex99-fake` | Exit 1; stderr: unknown exercise |
+| `hint_invalid_level` | `learn hint ex01-format-scoreboard --level 4` | Exit 1; stderr: level must be 1-3 |
+| `missing_campaign` | Any command without campaign.toml | Exit 1; stderr: campaign metadata missing |
+| `progress_compat` | Load existing v1 progress.toml (no hints_viewed) | Works without error; hints default to unseen |
+| `mid_campaign_status` | Progress with 2 exercises done | Correct XP, correct counts, correct next |
+| `all_complete` | All 15 done | `learn next`: "All exercises are complete" |
+| `cargo_xtask_compat` | `cargo xtask status` | Same output as `learn status` |
+
+**Test infrastructure:** Fixture workspace under `xtask/tests/fixtures/` with a minimal campaign. Fake cargo script (PATH override) for verify tests. All tests run via `cargo test --package xtask` and are picked up by `nix flake check`.
+
+---
+
+## VERDICT: ✅ APPROVED (Cycle 3 Re-Review)
+
+Contract is fully implemented and validated. All gating criteria pass. Guided CLI ships.
+
+---
+
 ### 2026-07-19: Re-Review — ex08 & ex15 Data Revisions (Mandatory Re-Review)
 
 **By:** Mikey (Learning Journey Lead)
@@ -85,42 +354,6 @@ All four Data revisions fully resolve the original rejection reasons. No new con
 **Resolved by:** Mikey's final code review (contract review above). All assumed specs confirmed or corrected by Data revisions.
 
 **Rustfmt status:** Data resolved all 12 formatting issues. Workspace passes `cargo fmt --all -- --check`.
-
----
-
-## Design Review — learn-rust v1 Architecture
-
-(See archived decision section below for v1 design reference; this is the canonical active decision record.)
-
-**Core Deliverable:** 15-exercise gamified Rust learning campaign
-
-**Architecture:** Cargo workspace (D1 updated with glob specificity), 3 worlds × 5 exercises, one crate per exercise. Learner stubs use `todo!()` (D2). Workspace compiles clean, tests fail on untouched stubs (D3). Per-exercise structure: `src/lib.rs` (stubs), `tests/solve.rs` (behavioral tests), `README.md` (quest prompt), `hints/` (3-tier progressive guides) (D4). Stub detection via panic message (D5). Test philosophy: behavioral black-box only, never enforce implementation shape (D6). v1 scope: 15 exercises (D7). Gamification: local XP + ranks + progressive hints, xtask runner (D8, D9). Unlock logic: advisory only (D10).
-
-**File Ownership (Non-Overlapping)**
-| Agent | Owns | Paths |
-|-------|------|-------|
-| Data | All Rust source, Cargo configs, xtask implementation, workspace glob precision | `Cargo.toml`, `xtask/**/*.rs`, `xtask/Cargo.toml`, `exercises/*/ex[0-9][0-9]-*/Cargo.toml`, `exercises/*/ex[0-9][0-9]-*/src/lib.rs`, `flake.nix`, `Cargo.lock`, `.envrc` |
-| Mouth | All learner-facing content, campaign metadata, hints, onboarding README | `exercises/*/ex[0-9][0-9]-*/README.md`, `exercises/*/ex[0-9][0-9]-*/hints/*.md`, `campaign.toml`, `README.md` (root), `.gitignore` additions |
-| Brand | All test code and test utilities (under original design review; locked out for ex08/ex15 revisions; Mikey-approved Data revisions now canonical) | `exercises/*/ex[0-9][0-9]-*/tests/solve.rs`, shared test helpers if any |
-
-**Verification Criteria**
-1. `cargo check --workspace` passes on fresh clone. ✅
-2. `cargo test -p ex01-hello-fix` fails with recognizable "not started" message. ✅
-3. Filling in a correct implementation makes `cargo test -p exNN` pass. ✅
-4. Multiple valid implementations pass the same test suite. ✅
-5. `cargo xtask status` displays progress correctly. ✅
-6. Hints never reveal the complete solution. ✅
-7. No exercise depends on another exercise's completion to compile. ✅
-8. `nix flake check path:.` passes (added by Nix directive). ✅
-
----
-
-## Implementation Status: ✅ COMPLETE — CAMPAIGN SHIPS
-
-- **Data:** Workspace skeleton (A1) ✅ + xtask progress tracking (A4) ✅ + Nix integration ✅ + contract revisions ✅
-- **Mouth:** Exercise READMEs (A2) ✅ + campaign.toml ✅ + 45 hints (3×15) ✅ + root README ✅ + Nix-only onboarding ✅
-- **Brand:** 148 behavioral tests (A3) ✅ + test utilities ✅ + nix build validation ✅ (then locked out; Data revisions approved)
-- **Mikey:** Design review ✅ + contract review ✅ + re-review of Data revisions ✅ + final verdict ✅
 
 ---
 

@@ -76,12 +76,26 @@ From `src/lib.rs`, the function must:
 - Item names with spaces, punctuation.
 - Priority 0 vs 255 boundaries.
 
-## Commands to Run
+## How to Work on This Quest
+
+**From inside `nix develop path:.`:**
 
 ```bash
-cargo xtask verify ex15-salvage-capstone
-cargo test -p ex15-salvage-capstone
-cargo xtask hint ex15-salvage-capstone
+# Check your work
+learn check ex15-salvage-capstone
+
+# Get a hint if stuck
+learn hint ex15-salvage-capstone
+
+# Or see the next hint level
+learn hint ex15-salvage-capstone --level 2
+```
+
+**Omit the exercise ID to use your current recommendation:**
+
+```bash
+learn check    # Checks current exercise
+learn hint     # Hints current exercise
 ```
 
 ## XP Reward

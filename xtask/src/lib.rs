@@ -15,34 +15,46 @@ pub fn run() -> Result<(), XtaskError> {
     let root = discover_workspace_root(&cwd)?;
 
     match cli.command {
-        Commands::Verify { id } => cmd_verify(&root, &id),
-        Commands::Status => cmd_status(&root),
-        Commands::Next => cmd_next(&root),
-        Commands::Hint { id, level } => cmd_hint(&root, &id, level),
+        None => cmd_dashboard(&root),
+        Some(Commands::Check { id }) => cmd_check(&root, id.as_deref()),
+        Some(Commands::Verify { id }) => cmd_check(&root, Some(&id)),
+        Some(Commands::Status) => cmd_status(&root),
+        Some(Commands::Next) => cmd_next(&root),
+        Some(Commands::Hint { id, level }) => cmd_hint(&root, id.as_deref(), level),
     }
 }
 
 #[derive(Debug, Parser)]
-#[command(name = "cargo xtask")]
-#[command(about = "Local automation for the Rust learning campaign")]
+#[command(name = "learn")]
+#[command(about = "Guided runner for the learn-rust campaign")]
 struct Cli {
     #[command(subcommand)]
-    command: Commands,
+    command: Option<Commands>,
 }
 
 #[derive(Debug, Subcommand)]
 enum Commands {
-    /// Run tests for one exercise and update progress on success.
-    Verify { id: String },
+    /// Run tests for an exercise and update progress on success.
+    Check {
+        /// Exercise ID (defaults to the current recommended exercise).
+        id: Option<String>,
+    },
+    /// Legacy alias for check: run tests for an exercise.
+    Verify {
+        /// Exercise ID.
+        id: String,
+    },
     /// Show XP, rank, and world-by-world progress.
     Status,
-    /// Recommend the next incomplete exercise.
+    /// Print the next incomplete exercise ID (script-friendly).
     Next,
-    /// Print a hint level for an exercise.
+    /// Show a hint; auto-advances to the next unseen level unless --level is given.
     Hint {
-        id: String,
-        #[arg(long, default_value_t = 1)]
-        level: u8,
+        /// Exercise ID (defaults to the current recommended exercise).
+        id: Option<String>,
+        /// Hint level 1–3 (overrides auto-advance when provided).
+        #[arg(long)]
+        level: Option<u8>,
     },
 }
 
@@ -57,8 +69,13 @@ pub enum XtaskError {
     UnknownExercise(String),
     InvalidHintLevel(u8),
     MissingHint(PathBuf),
-    SubprocessFailed { command: String, code: Option<i32> },
+    SubprocessFailed {
+        command: String,
+        code: Option<i32>,
+    },
     ProgressParse(toml::de::Error),
+    /// Tests ran and failed; output already shown — just exit 1 silently.
+    CheckFailed,
 }
 
 impl Display for XtaskError {
@@ -92,6 +109,7 @@ impl Display for XtaskError {
             XtaskError::ProgressParse(err) => {
                 write!(f, "failed to parse .learn-rust/progress.toml: {err}")
             }
+            XtaskError::CheckFailed => write!(f, "tests failed"),
         }
     }
 }
@@ -141,6 +159,9 @@ pub struct ProgressFile {
     pub schema_version: u32,
     pub earned_xp: u32,
     pub completed: Vec<String>,
+    /// Per-exercise highest hint level seen (1–3).  Added additively; absent means none viewed.
+    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
+    pub hints_viewed: HashMap<String, u8>,
 }
 
 impl Default for ProgressFile {
@@ -149,6 +170,7 @@ impl Default for ProgressFile {
             schema_version: PROGRESS_SCHEMA_VERSION,
             earned_xp: 0,
             completed: Vec::new(),
+            hints_viewed: HashMap::new(),
         }
     }
 }
@@ -494,7 +516,9 @@ fn progress_path(root: &Path) -> PathBuf {
 }
 
 fn run_exercise_tests(root: &Path, package: &str) -> Result<(), XtaskError> {
-    let status = Command::new("cargo")
+    // Honour the CARGO env var so integration tests can inject a fake binary.
+    let cargo = std::env::var("CARGO").unwrap_or_else(|_| "cargo".to_string());
+    let status = Command::new(&cargo)
         .arg("test")
         .arg("--package")
         .arg(package)
@@ -512,29 +536,114 @@ fn run_exercise_tests(root: &Path, package: &str) -> Result<(), XtaskError> {
     }
 }
 
-fn cmd_verify(root: &Path, id: &str) -> Result<(), XtaskError> {
+fn cmd_dashboard(root: &Path) -> Result<(), XtaskError> {
     let campaign = load_campaign(root)?;
-    let exercise = campaign
-        .resolve_exercise(id)
-        .ok_or_else(|| XtaskError::UnknownExercise(id.to_owned()))?;
+    let progress = load_progress(root)?;
+    let completed = progress.completed_set();
+    let rank = current_rank(&campaign, progress.earned_xp);
+    let total_xp: u32 = campaign
+        .exercises_in_order()
+        .iter()
+        .map(|e| e.exercise.xp)
+        .sum();
 
-    run_exercise_tests(root, &exercise.exercise.package)?;
+    println!("{}", campaign.title);
+    println!(
+        "{}  {}  ·  {} / {} XP",
+        rank.badge, rank.name, progress.earned_xp, total_xp
+    );
+    println!();
 
-    let mut progress = load_progress(root)?;
-    if progress.mark_completed(id, exercise.exercise.xp) {
-        save_progress(root, &progress)?;
+    for world in &campaign.worlds {
+        let done = world
+            .exercises
+            .iter()
+            .filter(|e| completed.contains(&e.id))
+            .count();
+        let bar: String = world
+            .exercises
+            .iter()
+            .map(|e| {
+                if completed.contains(&e.id) {
+                    '█'
+                } else {
+                    '░'
+                }
+            })
+            .collect();
         println!(
-            "✅ {} verified. +{} XP (total: {}).",
-            id, exercise.exercise.xp, progress.earned_xp
-        );
-    } else {
-        println!(
-            "✅ {} verified again. XP unchanged (total: {}).",
-            id, progress.earned_xp
+            "  {:<28} {}/{}  {}",
+            world.name,
+            done,
+            world.exercises.len(),
+            bar
         );
     }
 
+    println!();
+
+    match choose_next_exercise(&campaign, &completed) {
+        Some(next) => {
+            println!("▶ Next: {} — {}", next.exercise.id, next.exercise.title);
+            println!();
+            println!("  learn check          verify your solution");
+            println!("  learn hint           get a hint (auto-advances each call)");
+            println!("  learn status         detailed progress");
+            println!("  learn next           next exercise ID only");
+        }
+        None => {
+            println!("🎉 All exercises complete — great work!");
+        }
+    }
+
     Ok(())
+}
+
+fn cmd_check(root: &Path, id: Option<&str>) -> Result<(), XtaskError> {
+    let campaign = load_campaign(root)?;
+    let progress = load_progress(root)?;
+    let completed = progress.completed_set();
+
+    let exercise_ref = match id {
+        Some(id) => campaign
+            .resolve_exercise(id)
+            .ok_or_else(|| XtaskError::UnknownExercise(id.to_owned()))?,
+        None => match choose_next_exercise(&campaign, &completed) {
+            Some(e) => e,
+            None => {
+                println!("🎉 All exercises complete — nothing left to check!");
+                return Ok(());
+            }
+        },
+    };
+
+    let ex_id = exercise_ref.exercise.id.clone();
+    let ex_xp = exercise_ref.exercise.xp;
+    let ex_package = exercise_ref.exercise.package.clone();
+
+    match run_exercise_tests(root, &ex_package) {
+        Ok(()) => {
+            let mut progress = load_progress(root)?;
+            if progress.mark_completed(&ex_id, ex_xp) {
+                save_progress(root, &progress)?;
+                println!(
+                    "✅ {} verified. +{} XP (total: {}).",
+                    ex_id, ex_xp, progress.earned_xp
+                );
+            } else {
+                println!(
+                    "✅ {} verified again. XP unchanged (total: {}).",
+                    ex_id, progress.earned_xp
+                );
+            }
+            Ok(())
+        }
+        Err(_) => {
+            eprintln!();
+            eprintln!("💡 Tip: run `learn hint {}` for a nudge.", ex_id);
+            Err(XtaskError::CheckFailed)
+        }
+    }
 }
 
 fn current_rank<'a>(campaign: &'a Campaign, xp: u32) -> &'a Rank {
@@ -639,28 +748,60 @@ fn cmd_next(root: &Path) -> Result<(), XtaskError> {
     }
 }
 
-fn cmd_hint(root: &Path, id: &str, level: u8) -> Result<(), XtaskError> {
-    if !(1..=3).contains(&level) {
-        return Err(XtaskError::InvalidHintLevel(level));
-    }
-
+fn cmd_hint(root: &Path, id: Option<&str>, level: Option<u8>) -> Result<(), XtaskError> {
     let campaign = load_campaign(root)?;
-    let exercise = campaign
-        .resolve_exercise(id)
-        .ok_or_else(|| XtaskError::UnknownExercise(id.to_owned()))?;
+    let mut progress = load_progress(root)?;
+    let completed = progress.completed_set();
+
+    let exercise_ref = match id {
+        Some(id) => campaign
+            .resolve_exercise(id)
+            .ok_or_else(|| XtaskError::UnknownExercise(id.to_owned()))?,
+        None => match choose_next_exercise(&campaign, &completed) {
+            Some(e) => e,
+            None => {
+                println!("🎉 All exercises complete — no hints needed!");
+                return Ok(());
+            }
+        },
+    };
+
+    let ex_id = exercise_ref.exercise.id.clone();
+    let world_id = exercise_ref.world.id.clone();
+
+    let effective_level = match level {
+        Some(l) => {
+            if !(1..=3).contains(&l) {
+                return Err(XtaskError::InvalidHintLevel(l));
+            }
+            l
+        }
+        None => {
+            let viewed = progress.hints_viewed.get(&ex_id).copied().unwrap_or(0);
+            (viewed + 1).min(3)
+        }
+    };
 
     let hint_path = root
         .join("exercises")
-        .join(&exercise.world.id)
-        .join(&exercise.exercise.id)
+        .join(&world_id)
+        .join(&ex_id)
         .join("hints")
-        .join(format!("hint{level}.md"));
+        .join(format!("hint{effective_level}.md"));
 
     if !hint_path.exists() {
         return Err(XtaskError::MissingHint(hint_path));
     }
 
-    let hint = fs::read_to_string(hint_path).map_err(XtaskError::Io)?;
+    let hint = fs::read_to_string(&hint_path).map_err(XtaskError::Io)?;
+
+    // Persist: record this level if it advances beyond what was seen before.
+    let current_max = progress.hints_viewed.get(&ex_id).copied().unwrap_or(0);
+    if effective_level > current_max {
+        progress.hints_viewed.insert(ex_id.clone(), effective_level);
+        save_progress(root, &progress)?;
+    }
+
     print!("{hint}");
     Ok(())
 }
@@ -854,5 +995,43 @@ mod tests {
     fn invalid_exercise_id_is_detected() {
         assert!(!is_valid_exercise_id("exercise-01"));
         assert!(is_valid_exercise_id("ex01-format-scoreboard"));
+    }
+
+    #[test]
+    fn progress_file_deserializes_without_hints_viewed() {
+        let toml = r#"
+            schema_version = 1
+            earned_xp = 50
+            completed = ["ex01-alpha"]
+        "#;
+        let progress: ProgressFile =
+            toml::from_str(toml).expect("should parse without hints_viewed");
+        assert_eq!(progress.earned_xp, 50);
+        assert!(progress.hints_viewed.is_empty());
+    }
+
+    #[test]
+    fn hints_viewed_auto_advance_increments_from_zero() {
+        let progress = ProgressFile::default();
+        let viewed = progress
+            .hints_viewed
+            .get("ex01-alpha")
+            .copied()
+            .unwrap_or(0);
+        let next_level = (viewed + 1).min(3);
+        assert_eq!(next_level, 1);
+    }
+
+    #[test]
+    fn hints_viewed_auto_advance_caps_at_three() {
+        let mut progress = ProgressFile::default();
+        progress.hints_viewed.insert("ex01-alpha".to_owned(), 3);
+        let viewed = progress
+            .hints_viewed
+            .get("ex01-alpha")
+            .copied()
+            .unwrap_or(0);
+        let next_level = (viewed + 1).min(3);
+        assert_eq!(next_level, 3);
     }
 }

@@ -42,12 +42,27 @@ From `src/lib.rs`, the function must:
 - Range boundaries are inclusive (both start and end included).
 - Large ranges should still compute correctly.
 
-## Commands to Run
+## How to Work on This Quest
+
+**From inside `nix develop path:.`:**
 
 ```bash
-cargo xtask verify ex04-energy-loop
-cargo test -p ex04-energy-loop
-cargo xtask hint ex04-energy-loop
+# Check your work
+learn check ex04-energy-loop
+
+# Get a hint if stuck
+learn hint ex04-energy-loop
+
+# Or see the next hint level
+learn hint ex04-energy-loop --level 2
+```
+
+**Omit the exercise ID to use your current recommendation:**
+
+```bash
+learn check    # Checks current exercise
+learn hint     # Hints current exercise
+```
 ```
 
 ## XP Reward

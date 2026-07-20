@@ -46,12 +46,26 @@ From `src/lib.rs`, the functions must:
 - `count` larger than array length.
 - Readings with exactly `count` elements.
 
-## Commands to Run
+## How to Work on This Quest
+
+**From inside `nix develop path:.`:**
 
 ```bash
-cargo xtask verify ex06-slice-telemetry
-cargo test -p ex06-slice-telemetry
-cargo xtask hint ex06-slice-telemetry
+# Check your work
+learn check ex06-slice-telemetry
+
+# Get a hint if stuck
+learn hint ex06-slice-telemetry
+
+# Or see the next hint level
+learn hint ex06-slice-telemetry --level 2
+```
+
+**Omit the exercise ID to use your current recommendation:**
+
+```bash
+learn check    # Checks current exercise
+learn hint     # Hints current exercise
 ```
 
 ## XP Reward

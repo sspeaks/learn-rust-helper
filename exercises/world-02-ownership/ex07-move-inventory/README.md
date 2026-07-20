@@ -43,12 +43,26 @@ From `src/lib.rs`, the function must:
 - Multiple calls to the same manifest (only removes the first matching crate).
 - Crate ID comparison is case-sensitive and exact.
 
-## Commands to Run
+## How to Work on This Quest
+
+**From inside `nix develop path:.`:**
 
 ```bash
-cargo xtask verify ex07-move-inventory
-cargo test -p ex07-move-inventory
-cargo xtask hint ex07-move-inventory
+# Check your work
+learn check ex07-move-inventory
+
+# Get a hint if stuck
+learn hint ex07-move-inventory
+
+# Or see the next hint level
+learn hint ex07-move-inventory --level 2
+```
+
+**Omit the exercise ID to use your current recommendation:**
+
+```bash
+learn check    # Checks current exercise
+learn hint     # Hints current exercise
 ```
 
 ## XP Reward
