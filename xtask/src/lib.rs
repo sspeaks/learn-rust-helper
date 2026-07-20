@@ -21,6 +21,7 @@ pub fn run() -> Result<(), XtaskError> {
         Some(Commands::Status) => cmd_status(&root),
         Some(Commands::Next) => cmd_next(&root),
         Some(Commands::Hint { id, level }) => cmd_hint(&root, id.as_deref(), level),
+        Some(Commands::Solution { id }) => cmd_solution(&root, &id),
     }
 }
 
@@ -56,6 +57,11 @@ enum Commands {
         #[arg(long)]
         level: Option<u8>,
     },
+    /// Show the reference solution for a completed exercise.
+    Solution {
+        /// Exercise ID (required).
+        id: String,
+    },
 }
 
 #[derive(Debug)]
@@ -69,6 +75,8 @@ pub enum XtaskError {
     UnknownExercise(String),
     InvalidHintLevel(u8),
     MissingHint(PathBuf),
+    ExerciseIncomplete(String),
+    MissingSolution(PathBuf),
     SubprocessFailed {
         command: String,
         code: Option<i32>,
@@ -101,6 +109,13 @@ impl Display for XtaskError {
             }
             XtaskError::MissingHint(path) => {
                 write!(f, "hint file does not exist: {}", path.display())
+            }
+            XtaskError::ExerciseIncomplete(id) => write!(
+                f,
+                "complete {id} before viewing its solution.\n       Run `learn check {id}` to verify your work."
+            ),
+            XtaskError::MissingSolution(path) => {
+                write!(f, "reference solution not yet available: {}", path.display())
             }
             XtaskError::SubprocessFailed { command, code } => match code {
                 Some(code) => write!(f, "command failed with exit code {code}: {command}"),
@@ -595,6 +610,7 @@ fn cmd_dashboard(root: &Path) -> Result<(), XtaskError> {
             println!();
             println!("  learn check          verify your solution");
             println!("  learn hint           get a hint (auto-advances each call)");
+            println!("  learn solution <id>  — view reference solution (after completing)");
             println!("  learn status         detailed progress");
             println!("  learn next           next exercise ID only");
         }
@@ -636,6 +652,10 @@ fn cmd_check(root: &Path, id: Option<&str>) -> Result<(), XtaskError> {
                 println!(
                     "✅ {} verified. +{} XP (total: {}).",
                     ex_id, ex_xp, progress.earned_xp
+                );
+                println!(
+                    "   learn solution {}  — see a reference solution now",
+                    ex_id
                 );
             } else {
                 println!(
@@ -810,6 +830,53 @@ fn cmd_hint(root: &Path, id: Option<&str>, level: Option<u8>) -> Result<(), Xtas
     }
 
     print!("{hint}");
+    Ok(())
+}
+
+fn cmd_solution(root: &Path, id: &str) -> Result<(), XtaskError> {
+    let campaign = load_campaign(root)?;
+    let progress = load_progress(root)?;
+
+    let exercise_ref = campaign
+        .resolve_exercise(id)
+        .ok_or_else(|| XtaskError::UnknownExercise(id.to_owned()))?;
+
+    let completed = progress.completed_set();
+    if !completed.contains(id) {
+        return Err(XtaskError::ExerciseIncomplete(id.to_owned()));
+    }
+
+    let ex_id = &exercise_ref.exercise.id;
+    let world_id = &exercise_ref.world.id;
+    let title = &exercise_ref.exercise.title;
+
+    let solution_path = root
+        .join("exercises")
+        .join(world_id)
+        .join(ex_id)
+        .join("hints")
+        .join("solution.rs");
+
+    if !solution_path.exists() {
+        let relative = solution_path
+            .strip_prefix(root)
+            .unwrap_or(&solution_path)
+            .to_path_buf();
+        return Err(XtaskError::MissingSolution(relative));
+    }
+
+    let solution = fs::read_to_string(&solution_path).map_err(XtaskError::Io)?;
+
+    const SEP: &str = "────────────────────────────────────────────────────────────";
+    println!("📖 Reference Solution — {title} ({ex_id})");
+    println!("{SEP}");
+    print!("{solution}");
+    if !solution.ends_with('\n') {
+        println!();
+    }
+    println!("{SEP}");
+    println!("Note: This is one idiomatic approach. Your solution may be equally valid.");
+
     Ok(())
 }
 
