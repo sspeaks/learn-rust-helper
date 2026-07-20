@@ -16,6 +16,9 @@ impl ScoreEntry {
 }
 
 pub fn format_scoreboard_line(player: &str, score: i32, rank: usize) -> String {
+    // ════════════════════════════════════════════════════════════════════════════
+    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
+    // ════════════════════════════════════════════════════════════════════════════
     todo!("Format a scoreboard row like '#01 | PlayerName | +0042'")
 }
 

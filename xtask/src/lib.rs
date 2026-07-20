@@ -585,6 +585,13 @@ fn cmd_dashboard(root: &Path) -> Result<(), XtaskError> {
     match choose_next_exercise(&campaign, &completed) {
         Some(next) => {
             println!("▶ Next: {} — {}", next.exercise.id, next.exercise.title);
+            let edit_path = root
+                .join("exercises")
+                .join(&next.world.id)
+                .join(&next.exercise.id)
+                .join("src")
+                .join("lib.rs");
+            println!("  📂 Edit: {}", edit_path.display());
             println!();
             println!("  learn check          verify your solution");
             println!("  learn hint           get a hint (auto-advances each call)");

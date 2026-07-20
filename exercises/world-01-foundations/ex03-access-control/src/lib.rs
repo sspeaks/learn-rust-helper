@@ -6,6 +6,9 @@ pub enum Clearance {
 }
 
 pub fn access_message(clearance: Clearance, is_on_duty: bool) -> &'static str {
+    // ════════════════════════════════════════════════════════════════════════════
+    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
+    // ════════════════════════════════════════════════════════════════════════════
     todo!("Use if and match to map each clearance/duty pair to a gate message")
 }
 

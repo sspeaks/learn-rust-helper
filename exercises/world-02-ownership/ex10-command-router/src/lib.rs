@@ -7,6 +7,9 @@ pub enum Command {
 }
 
 pub fn route_command(command: Command) -> String {
+    // ════════════════════════════════════════════════════════════════════════════
+    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
+    // ════════════════════════════════════════════════════════════════════════════
     todo!("Pattern-match each command variant into a routing message")
 }
 

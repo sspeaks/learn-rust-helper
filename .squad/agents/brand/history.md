@@ -42,3 +42,20 @@ Initial setup complete. Validation must distinguish untouched stubs from correct
 - ✅ Tests approved as part of Data's Cycle 3 delivery
 
 **Note:** Brand's original test design and behavioral contract were sound. The conditional rejection was purely a formatting gate, now resolved by Data's independent recreation and formatting.
+
+📌 Team update (2026-07-20T13:45:24.420-07:00): Design Review approved—absolute edit path in dashboard + 18 learner-stub banners. You own: `cli.rs` path test + new `exercise_markers.rs` inventory test. —Mikey
+
+
+---
+
+✅ **Campaign Complete: Absolute Edit Paths & Mission Banners**  
+**Timestamp:** 2026-07-20T14:02:00-07:00  
+**Mikey Final Review:** APPROVE
+
+Your deliverables (2 items):
+- ✅ `xtask/tests/cli.rs` — `dashboard_shows_absolute_edit_path()` test → **Passing**
+- ✅ `xtask/tests/exercise_markers.rs` (new) — `every_exercise_has_mission_banner_for_each_todo()` test → **Passing (deterministic, 18 markers verified)**
+- ✅ Test suite: 7 unit + 19 integration = 26/26 pass
+- ✅ All gating criteria passed
+
+Focus: Ready for integration/merge. Archive: `log/2026-07-20T13-45-24.420-07-00-final-closeout.md`

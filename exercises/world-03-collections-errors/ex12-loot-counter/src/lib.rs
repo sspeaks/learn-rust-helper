@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
 pub fn count_loot(items: &[&str]) -> HashMap<String, usize> {
+    // ════════════════════════════════════════════════════════════════════════════
+    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
+    // ════════════════════════════════════════════════════════════════════════════
     todo!("Count each item occurrence into a HashMap<String, usize>")
 }
 

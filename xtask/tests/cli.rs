@@ -297,3 +297,28 @@ fn cargo_xtask_compat() {
     assert_contains(&stdout, "verified");
     assert_contains(&stdout, "XP");
 }
+
+// ── 18. dashboard_shows_absolute_edit_path ──────────────────────────────────
+
+#[test]
+fn dashboard_shows_absolute_edit_path() {
+    let ws = TempWorkspace::new();
+    let out = ws.run(&[]);
+    assert!(out.status.success(), "dashboard should exit 0");
+    let stdout = String::from_utf8_lossy(&out.stdout);
+
+    // The fixture campaign's first exercise is ex01-alpha in world-01-alpha.
+    // The subprocess calls current_dir() after chdir(), which on macOS returns
+    // the physical (symlink-resolved) path.  Canonicalize the temp root to match.
+    let expected_path = ws
+        .root()
+        .canonicalize()
+        .expect("temp dir should be canonicalizable")
+        .join("exercises")
+        .join("world-01-alpha")
+        .join("ex01-alpha")
+        .join("src")
+        .join("lib.rs");
+    let expected_line = format!("  📂 Edit: {}", expected_path.display());
+    assert_contains(&stdout, &expected_line);
+}

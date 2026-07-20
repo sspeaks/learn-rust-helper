@@ -6,6 +6,9 @@ pub struct CalibrationInput {
 }
 
 pub fn calibrate_reactor(base_output: i32, drift: i32, efficiency_percent: u8) -> i32 {
+    // ════════════════════════════════════════════════════════════════════════════
+    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
+    // ════════════════════════════════════════════════════════════════════════════
     todo!("Apply drift and percentage efficiency to produce final reactor output")
 }
 

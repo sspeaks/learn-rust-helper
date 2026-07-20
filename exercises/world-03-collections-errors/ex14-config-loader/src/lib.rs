@@ -14,5 +14,8 @@ pub enum ConfigError {
 }
 
 pub fn parse_server_config(input: &str) -> Result<ServerConfig, ConfigError> {
+    // ════════════════════════════════════════════════════════════════════════════
+    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
+    // ════════════════════════════════════════════════════════════════════════════
     todo!("Parse key=value lines into ServerConfig and return detailed ConfigError values")
 }

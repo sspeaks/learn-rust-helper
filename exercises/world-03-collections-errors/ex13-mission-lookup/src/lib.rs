@@ -6,6 +6,9 @@ pub struct Mission {
 }
 
 pub fn active_reward_for_code(missions: &[Mission], code: &str) -> Option<u32> {
+    // ════════════════════════════════════════════════════════════════════════════
+    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
+    // ════════════════════════════════════════════════════════════════════════════
     todo!("Return Some(reward) only when mission code exists and is active")
 }
 

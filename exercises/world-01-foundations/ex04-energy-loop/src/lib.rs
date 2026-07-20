@@ -1,6 +1,9 @@
 use std::ops::RangeInclusive;
 
 pub fn total_harvest(cycles: RangeInclusive<u32>) -> u32 {
+    // ════════════════════════════════════════════════════════════════════════════
+    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
+    // ════════════════════════════════════════════════════════════════════════════
     todo!("Iterate over cycles and accumulate harvested energy")
 }
 

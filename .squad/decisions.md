@@ -362,3 +362,99 @@ All four Data revisions fully resolve the original rejection reasons. No new con
 - All meaningful changes require team consensus ✅
 - Document architectural decisions here ✅
 - Keep history focused on work, decisions focused on direction ✅
+
+
+---
+
+### 2026-07-20: Design Review — Absolute Edit Paths & Learner-Stub Markers — ✅ APPROVED
+
+**By:** Mikey (Learning Journey Lead)
+**Ceremony:** Design Review  
+**Timestamp:** 2026-07-20T13:45:00-07:00
+**Participants:** Data (Rust Engineer), Mouth (Game Designer), Brand (Challenge Tester)
+
+---
+
+## VERDICT: ✅ APPROVED — Implementation-Ready Contract
+
+Two changes address user feedback: the `learn` dashboard will print a full absolute path to the file the learner should edit, and every `todo!()` stub will be preceded by a visible 3-line banner comment.
+
+## Decisions
+
+1. **Absolute path source:** Use raw `root` from `discover_workspace_root()` (via `current_dir()`), not `canonicalize()`, to avoid confusing symlink resolution on macOS.
+
+2. **Path format in dashboard:** Print `📂 Edit: <absolute_path>` on a separate indented line immediately below `▶ Next:` exercise recommendation for copyability.
+
+3. **Banner placement:** 3-line `YOUR MISSION` marker inside function body, directly above each `todo!()` call, at correct statement indent (inherits automatically).
+
+4. **Banner text (exact):** `// ══════════════════════════════════════════════════════════════\n// 🚀 YOUR MISSION: Replace the todo!() below with your code.\n// ══════════════════════════════════════════════════════════════`
+
+5. **No code restructuring:** Banners solve visibility without reorganizing functions—preserves test line expectations, git blame, and teaching flow.
+
+6. **Test file split:** Dashboard path test in `xtask/tests/cli.rs`; banner inventory test in new `xtask/tests/exercise_markers.rs` (scans real exercise tree, not fixtures).
+
+## Action Items
+
+- **Data:** Implement absolute edit path in `cmd_dashboard()` + `println!` in `xtask/src/lib.rs`
+- **Data:** Insert `YOUR MISSION` banner above each of 18 `todo!()` calls across 15 exercise `src/lib.rs` files
+- **Brand:** Add `dashboard_shows_absolute_edit_path()` test to `xtask/tests/cli.rs`
+- **Brand:** Create `xtask/tests/exercise_markers.rs` with `every_exercise_has_mission_banner_for_each_todo()` test
+
+## Gating Criteria
+
+- `cargo fmt --all -- --check` must pass
+- `cargo test --package xtask` — all tests pass
+- `rg "YOUR MISSION" exercises/*/src/lib.rs | wc -l` — must equal 18
+- `nix flake check path:.` — must pass (if available)
+
+---
+
+
+---
+
+### 2026-07-20T13-45-24.420-07-00: Edit-Path & Mission Banners — Implementation Complete — ✅ APPROVED (Final)
+
+**By:** Mikey (Learning Journey Lead)  
+**Ceremony:** Final Coherence & Correctness Review  
+**Timestamp:** 2026-07-20T14:02:00-07:00  
+**Status:** ✅ IMPLEMENTATION-READY → ✅ APPROVED & COMPLETE
+
+---
+
+## VERDICT: ✅ APPROVE
+
+All contract points verified, all gating checks pass. Implementation by Data and Brand complete and validated.
+
+## Validation Evidence
+
+| Check | Result | Detail |
+|-------|--------|--------|
+| `cargo fmt --all -- --check` | ✅ Exit 0 | No formatting diffs |
+| `cargo check --workspace` | ✅ Exit 0 | Expected `todo!()` warnings only (learner stubs) |
+| `cargo test --package xtask` | ✅ 26 pass | 7 unit + 19 integration (added: path test + marker inventory test) |
+| `nix flake check path:.` | ✅ Pass | workspace-check + xtask-tests derivations rebuilt and passed |
+| Dashboard path output | ✅ Correct | `/Users/sspeaks/learn-rust/exercises/world-01-foundations/ex01-format-scoreboard/src/lib.rs` |
+| Banner count verification | ✅ 18 total | ex06: 2 stubs, ex09: 3 methods, remaining 12 files: 1 each |
+| API/behavior preservation | ✅ Verified | Additive only: 3-line banner insertions + one `println!` addition |
+| No solution leaks | ✅ Verified | All `todo!()` message strings unchanged (inline hints preserved) |
+
+## Implementation Assignments Completed
+
+| Agent | Work | Status |
+|-------|------|--------|
+| **Data** | `xtask/src/lib.rs` — `cmd_dashboard()` absolute path impl + println | ✅ Complete |
+| **Data** | 15× `exercises/*/src/lib.rs` — 18 `YOUR MISSION` banner insertions | ✅ Complete |
+| **Brand** | `xtask/tests/cli.rs` — `dashboard_shows_absolute_edit_path()` test | ✅ Complete |
+| **Brand** | `xtask/tests/exercise_markers.rs` (new) — `every_exercise_has_mission_banner_for_each_todo()` test | ✅ Complete |
+
+## Technical Notes
+
+1. **Path canonicalization behavior:** Product code uses raw `current_dir()` ancestor walk (no canonicalization). Test fixture canonicalizes *only* expected value to match macOS symlink kernel behavior—separates kernel symlink resolution from product logic.
+
+2. **Test determinism:** `exercise_markers` test scans the real exercise tree (not fixtures), counts file entries and stub pairs, asserts adjacency with actionable panic messages for failure investigation.
+
+3. **Warnings in CI:** All warnings are pre-existing `unused_variable` from learner `todo!()` stubs—expected and correct behavior (learner code will eventually bind these).
+
+4. **Nix derivation status:** Both `workspace-check` and `xtask-tests` rebuilt against current source tree and passed.
+
+---

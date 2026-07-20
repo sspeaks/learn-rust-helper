@@ -24,5 +24,8 @@ pub fn build_salvage_plan(
     manifest_lines: &[&str],
     capacity: u32,
 ) -> Result<SalvagePlan, SalvageError> {
+    // ════════════════════════════════════════════════════════════════════════════
+    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
+    // ════════════════════════════════════════════════════════════════════════════
     todo!("Parse manifest lines, aggregate metrics, and enforce capacity with explicit errors")
 }
