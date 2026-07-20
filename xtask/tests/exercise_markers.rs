@@ -55,8 +55,8 @@ fn has_banner(lines: &[&str], todo_idx: usize) -> bool {
 // ── test ─────────────────────────────────────────────────────────────────────
 
 /// Every `todo!()` in every exercise `src/lib.rs` must be immediately preceded
-/// by the complete three-line YOUR MISSION banner.  Expects exactly 15 files
-/// and 18 banner/todo pairs.
+/// by the complete three-line YOUR MISSION banner.  Expects exactly 15 files;
+/// the number of remaining `todo!()` stubs may be zero as learners make progress.
 #[test]
 fn every_exercise_has_mission_banner_for_each_todo() {
     let files = collect_exercise_lib_rs();
@@ -67,7 +67,6 @@ fn every_exercise_has_mission_banner_for_each_todo() {
         files.len()
     );
 
-    let mut total_pairs: usize = 0;
     let mut failures: Vec<String> = Vec::new();
 
     for file in &files {
@@ -79,7 +78,6 @@ fn every_exercise_has_mission_banner_for_each_todo() {
             if !line.trim().starts_with("todo!(") {
                 continue;
             }
-            total_pairs += 1;
             if !has_banner(&lines, i) {
                 failures.push(format!(
                     "{}:{}: todo!() is missing the immediately preceding \
@@ -98,10 +96,4 @@ fn every_exercise_has_mission_banner_for_each_todo() {
             failures.join("\n"),
         );
     }
-
-    assert_eq!(
-        total_pairs, 18,
-        "expected exactly 18 todo!()/banner pairs across all exercises; found {}",
-        total_pairs
-    );
 }
