@@ -18,6 +18,7 @@ fn no_args_dashboard() {
     assert_contains(&stdout, "Gamma World");
     assert_contains(&stdout, "learn check");
     assert_contains(&stdout, "learn hint");
+    assert_contains(&stdout, "learn solution");
 }
 
 // ── 2. status_fresh ─────────────────────────────────────────────────────────
@@ -60,6 +61,7 @@ fn check_success() {
     assert_contains(&stdout, "ex01-alpha");
     assert_contains(&stdout, "verified");
     assert_contains(&stdout, "XP");
+    assert_contains(&stdout, "learn solution");
     // Progress file should now exist.
     assert!(
         ws.progress_path().exists(),
@@ -117,6 +119,8 @@ completed = ["ex01-alpha"]
     let stdout = String::from_utf8_lossy(&out.stdout);
     assert_contains(&stdout, "verified again");
     assert_contains(&stdout, "XP unchanged");
+    // Repeat completion must NOT re-advertise the solution command.
+    assert_not_contains(&stdout, "learn solution");
 }
 
 // ── 8. hint_default_level ───────────────────────────────────────────────────
@@ -321,4 +325,93 @@ fn dashboard_shows_absolute_edit_path() {
         .join("lib.rs");
     let expected_line = format!("  📂 Edit: {}", expected_path.display());
     assert_contains(&stdout, &expected_line);
+}
+
+// ── 19. solution_completed ───────────────────────────────────────────────────
+
+#[test]
+fn solution_completed() {
+    let ws = TempWorkspace::new();
+    ws.set_progress(
+        r#"schema_version = 1
+earned_xp = 10
+completed = ["ex01-alpha"]
+"#,
+    );
+    ws.set_solution(
+        "world-01-alpha",
+        "ex01-alpha",
+        "fn answer() -> u32 { 42 }\n",
+    );
+    let out = ws.run(&["solution", "ex01-alpha"]);
+    assert!(
+        out.status.success(),
+        "exit code should be 0 for completed exercise with solution file"
+    );
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    assert_contains(&stdout, "📖 Reference Solution");
+    assert_contains(&stdout, "ex01-alpha");
+    // Structural framing: separator lines must bracket the content.
+    assert_contains(&stdout, "────");
+    // Exact file bytes are echoed.
+    assert_contains(&stdout, "fn answer() -> u32 { 42 }");
+    // Footer note.
+    assert_contains(&stdout, "Note: This is one idiomatic approach");
+}
+
+// ── 20. solution_incomplete ──────────────────────────────────────────────────
+
+#[test]
+fn solution_incomplete() {
+    let ws = TempWorkspace::new();
+    // No progress written → ex01-alpha is not completed.
+    let out = ws.run(&["solution", "ex01-alpha"]);
+    assert!(
+        !out.status.success(),
+        "exit code should be nonzero for incomplete exercise"
+    );
+    let stderr = String::from_utf8_lossy(&out.stderr);
+    assert_contains(&stderr, "complete ex01-alpha");
+    assert_contains(&stderr, "learn check ex01-alpha");
+}
+
+// ── 21. solution_unknown_id ──────────────────────────────────────────────────
+
+#[test]
+fn solution_unknown_id() {
+    let ws = TempWorkspace::new();
+    let out = ws.run(&["solution", "ex99-unknown"]);
+    assert!(
+        !out.status.success(),
+        "exit code should be nonzero for unknown exercise ID"
+    );
+    let stderr = String::from_utf8_lossy(&out.stderr);
+    assert_contains(&stderr, "unknown exercise id");
+    assert_contains(&stderr, "ex99-unknown");
+}
+
+// ── 22. solution_missing_file ────────────────────────────────────────────────
+
+#[test]
+fn solution_missing_file() {
+    let ws = TempWorkspace::new();
+    ws.set_progress(
+        r#"schema_version = 1
+earned_xp = 10
+completed = ["ex01-alpha"]
+"#,
+    );
+    // Exercise is completed but no solution.rs has been written.
+    let out = ws.run(&["solution", "ex01-alpha"]);
+    assert!(
+        !out.status.success(),
+        "exit code should be nonzero when solution file is missing"
+    );
+    let stderr = String::from_utf8_lossy(&out.stderr);
+    assert_contains(&stderr, "reference solution not yet available");
+    // Error must show a relative path (not an absolute temp path).
+    assert_contains(
+        &stderr,
+        "exercises/world-01-alpha/ex01-alpha/hints/solution.rs",
+    );
 }

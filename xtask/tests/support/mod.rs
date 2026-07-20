@@ -109,6 +109,20 @@ members = ["xtask"]
         self.dir.path().join(".learn-rust").join("progress.toml")
     }
 
+    /// Write a `hints/solution.rs` for the given world/exercise in this workspace.
+    /// The `hints/` directory is created if it does not already exist.
+    pub fn set_solution(&self, world: &str, exercise: &str, content: &str) {
+        let hints_dir = self
+            .dir
+            .path()
+            .join("exercises")
+            .join(world)
+            .join(exercise)
+            .join("hints");
+        fs::create_dir_all(&hints_dir).expect("create hints dir for solution");
+        fs::write(hints_dir.join("solution.rs"), content).expect("write solution.rs");
+    }
+
     /// Run the `learn` binary with the given args in this workspace.
     /// Returns the raw `Output` so tests can inspect stdout, stderr, and status.
     pub fn run(&self, args: &[&str]) -> Output {
