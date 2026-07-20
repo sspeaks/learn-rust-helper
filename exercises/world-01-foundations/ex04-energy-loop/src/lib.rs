@@ -1,10 +1,12 @@
 use std::ops::RangeInclusive;
 
 pub fn total_harvest(cycles: RangeInclusive<u32>) -> u32 {
-    // ════════════════════════════════════════════════════════════════════════════
-    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-    // ════════════════════════════════════════════════════════════════════════════
-    todo!("Iterate over cycles and accumulate harvested energy")
+    let mut total: u32 = 0;
+    for cycle in cycles {
+        total += cycle;
+    }
+    total
+
 }
 
 pub fn mission_harvest_report(missions: &[RangeInclusive<u32>]) -> Vec<u32> {

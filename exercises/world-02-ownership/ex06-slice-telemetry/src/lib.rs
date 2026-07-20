@@ -1,13 +1,15 @@
 pub fn first_sentence(report: &str) -> &str {
-    // ════════════════════════════════════════════════════════════════════════════
-    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-    // ════════════════════════════════════════════════════════════════════════════
-    todo!("Return a slice containing only the first sentence in report")
+    for (ind, byte) in report.as_bytes().iter().enumerate() {
+        if *byte == b'.' {
+            return &report[0..ind+1];
+        }
+    }
+    report
+
 }
 
 pub fn trailing_readings(readings: &[i32], count: usize) -> &[i32] {
-    // ════════════════════════════════════════════════════════════════════════════
-    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-    // ════════════════════════════════════════════════════════════════════════════
-    todo!("Return a slice containing the last `count` readings without allocating")
+    let len = readings.len();
+    if count >= len { return readings; }
+    &readings[len-count..len]
 }
