@@ -9,6 +9,8 @@
 # Squad: SubSquad activation file (local to this machine)
 .squad-workstream
 
+.direnv
+
 # Rust build output
 target/
 
