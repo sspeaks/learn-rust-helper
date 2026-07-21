@@ -7,23 +7,18 @@ pub struct CrewMember {
 
 impl CrewMember {
     pub fn new(name: impl Into<String>, role: impl Into<String>, level: u8) -> Self {
-        // ════════════════════════════════════════════════════════════════════════════
-        // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-        // ════════════════════════════════════════════════════════════════════════════
-        todo!("Construct a CrewMember from inputs")
+        CrewMember { name: name.into(), role: role.into(), level }
     }
 
     pub fn promote(&mut self, new_role: impl Into<String>) {
-        // ════════════════════════════════════════════════════════════════════════════
-        // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-        // ════════════════════════════════════════════════════════════════════════════
-        todo!("Update role and increase level, capped at 99")
+        self.level = self.level + 1;
+        if self.level > 99 {
+            self.level = 99;
+        }
+        self.role = new_role.into();
     }
 
     pub fn badge(&self) -> String {
-        // ════════════════════════════════════════════════════════════════════════════
-        // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-        // ════════════════════════════════════════════════════════════════════════════
-        todo!("Build a display badge like '[L05] Nova — Navigator'")
+        format!("[L{:02}] {} — {}", self.level, self.name, self.role)
     }
 }
