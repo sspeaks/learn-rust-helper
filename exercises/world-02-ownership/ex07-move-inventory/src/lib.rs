@@ -8,8 +8,7 @@ pub fn move_crate_to_shuttle(
     manifest: &mut Vec<SupplyCrate>,
     crate_id: &str,
 ) -> Option<SupplyCrate> {
-    // ════════════════════════════════════════════════════════════════════════════
-    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-    // ════════════════════════════════════════════════════════════════════════════
-    todo!("Find a crate by id, remove it from manifest, and move ownership to caller")
+    let index = manifest.iter().position(|c| c.id == crate_id)?;
+
+   Some(manifest.swap_remove(index))
 }

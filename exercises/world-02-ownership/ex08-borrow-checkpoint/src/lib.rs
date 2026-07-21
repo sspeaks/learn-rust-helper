@@ -6,8 +6,14 @@ pub struct Turret {
 }
 
 pub fn rebalance_turrets(turrets: &mut [Turret], emergency_boost: i32) {
-    // ════════════════════════════════════════════════════════════════════════════
-    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-    // ════════════════════════════════════════════════════════════════════════════
-    todo!("Mutably borrow each turret and adjust charge/overheat state in place")
+    for turret in turrets {
+        let new_sum = turret.charge + emergency_boost;
+        turret.charge = if new_sum > 100 {
+            turret.overheated = true;
+            100
+        } else {
+            turret.overheated = false;
+            new_sum
+        };
+    }
 }
