@@ -7,10 +7,12 @@ pub enum Command {
 }
 
 pub fn route_command(command: Command) -> String {
-    // ════════════════════════════════════════════════════════════════════════════
-    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-    // ════════════════════════════════════════════════════════════════════════════
-    todo!("Pattern-match each command variant into a routing message")
+    match command {
+        Command::Dock {bay} => format!("Routing to Bay {}", bay),
+        Command::Launch {window} => format!("Launch window {} locked", window),
+        Command::Broadcast(msg) => format!("Broadcasting: {}", msg),
+        Command::Abort => "Abort signal received".to_string()
+    }
 }
 
 pub fn route_batch(commands: Vec<Command>) -> Vec<String> {

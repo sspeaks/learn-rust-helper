@@ -6,8 +6,9 @@ pub struct LogEvent {
 }
 
 pub fn summarize_failures(events: &[LogEvent], max_items: usize) -> Vec<String> {
-    // ════════════════════════════════════════════════════════════════════════════
-    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-    // ════════════════════════════════════════════════════════════════════════════
-    todo!("Use iterator adaptors to collect up to max_items failure summaries")
+    events.iter()
+        .filter(|log| !log.success)
+        .take(max_items)
+        .map(|log| format!("{}: error code {}", log.system, log.code))
+        .collect()
 }
