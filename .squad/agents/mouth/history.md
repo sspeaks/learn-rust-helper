@@ -67,3 +67,6 @@ Initial setup complete. The experience should feel like a campaign, with visible
 **Lockout Status:** Cleared ✅
 
 **Gates Owned:** All ✅ pass
+
+
+📌 Team update (2026-07-22T11:53:34.452-07:00): Framing copy contract finalized and recorded in decisions.md. Issue #1 solution command execution order: Mouth→Data→Brand. All 5 player-facing surfaces specified (success display, incomplete guidance, missing artifact, dashboard discoverability, post-check message). Ready to write 15 solution.rs files. — Scribe

@@ -742,3 +742,301 @@ No lockouts applied. All agents (Data, Mouth, Brand) eligible for future work.
 ---
 
 **Scribe Session Finalization Report: SESSION COMPLETE**
+
+---
+
+### 2026-07-20T23-29-07: Design Review — Issue #1: learn solution command UX, contracts, and implementation plan
+**By:** Mikey
+**What:** Design Review — Issue #1: learn solution command UX, contracts, and implementation plan
+**References:** https://github.com/sspeaks/learn-rust-helper/issues/1, squad:mouth, squad:data, squad:brand
+**Why:** ## Design Review Ceremony — Issue #1: Idiomatic solution exposed when solved
+
+**Date:** 2026-07-20T16:20:49-07:00
+**Facilitator:** Mikey (Learning Journey Lead)
+**Participants:** Mouth (Game Designer), Data (Rust Engineer), Brand (Challenge Tester)
+**Issue:** https://github.com/sspeaks/learn-rust-helper/issues/1
+
+---
+
+### D1: Command UX — `learn solution <id>`
+
+**Decision:** Add a `Solution` subcommand to the `learn` CLI with a required `id: String` argument.
+
+- Syntax: `learn solution <exercise-id>`
+- No default/optional ID — unlike `hint` and `check`, there is no sensible default for solution (the "next" exercise is incomplete by definition; defaulting to "last completed" adds ordering complexity with no progress.toml support).
+- Rationale: Require explicit intent. The learner must name the exercise they want to review. Error messages guide them when they get it wrong.
+
+### D2: Unlock Semantics — Completion-Gated
+
+**Decision:** The solution is only viewable if the exercise ID appears in `progress.toml`'s `completed` array.
+
+- Not-completed → new `XtaskError::ExerciseNotCompleted(String)` with message: `"complete {id} before viewing its solution. Run \`learn check {id}\` to verify your work."`
+- Legacy-completed exercises (completed before this feature ships) are fully supported — the gate is the `completed` array, not a timestamp.
+- No XP cost, no hint penalty, no side effects on progress state.
+
+### D3: Solution Artifact Format and Location
+
+**Decision:** Store one solution file per exercise at `exercises/<world>/<exercise>/hints/solution.rs`.
+
+- File format: plain `.rs` (not markdown) — enables syntax highlighting, IDE support, and `rustfmt` linting.
+- Location: inside the existing `hints/` directory, following the convention that learning-aid artifacts live alongside hints.
+- Naming: `solution.rs` (singular, not `solution1.rs` etc.).
+- Git-tracked: solutions ship with the repo. The CLI gate is behavioral (soft), not filesystem security. This mirrors hints, which are also browsable on disk.
+- 15 files total (one per exercise).
+
+### D4: Output and Error Contracts
+
+**Success output (stdout):**
+```
+📖 Reference Solution — {title} ({id})
+────────────────────────────────────
+{solution file content}
+────────────────────────────────────
+Note: This is one idiomatic approach. Your solution may be equally valid.
+```
+
+**Error cases (stderr, exit 1):**
+| Condition | Error variant | Message |
+|-----------|--------------|---------|
+| Unknown exercise ID | `UnknownExercise(String)` (existing) | `"unknown exercise id: {id}"` |
+| Exercise not completed | `ExerciseNotCompleted(String)` (new) | `"complete {id} before viewing its solution. Run \`learn check {id}\` to verify your work."` |
+| No solution file on disk | `MissingSolution(PathBuf)` (new) | `"reference solution not yet available: {path}"` |
+
+### D5: Dashboard Integration
+
+**Decision:** Add `learn solution <id>` to the dashboard help lines (printed after a successful `learn check`).
+
+- After `learn check` succeeds for the first time: append `💡 Run \`learn solution {id}\` to see a reference implementation.` to the success message.
+- Dashboard command list: add `learn solution <id>  view reference solution (after completion)` below the existing `learn hint` line.
+
+### D6: Test Ownership and Scope
+
+**Brand** owns all integration tests. Minimum required test cases:
+
+| # | Test name | Behavior |
+|---|-----------|----------|
+| 1 | `solution_completed_exercise` | Exercise in completed list → success, outputs solution content |
+| 2 | `solution_not_completed` | Exercise NOT completed → exit 1, stderr contains "complete ... before viewing" |
+| 3 | `solution_unknown_id` | Nonexistent ID → exit 1, stderr contains "unknown exercise id" |
+| 4 | `solution_missing_file` | Exercise completed but no solution.rs on disk → exit 1, stderr contains "not yet available" |
+
+Test fixture changes: `TempWorkspace::new()` must create a `hints/solution.rs` for `ex01-alpha` (the fixture exercise that already has hint files).
+
+---
+
+### File Ownership (Non-Overlapping)
+
+| Agent | Files owned | Notes |
+|-------|------------|-------|
+| **Data** | `xtask/src/lib.rs` | Add `Commands::Solution`, error variants, `cmd_solution()` |
+| **Mouth** | All 15 `exercises/*/hints/solution.rs` | Idiomatic reference solutions + framing copy spec |
+| **Brand** | `xtask/tests/cli.rs`, `xtask/tests/support/mod.rs` | Integration tests + fixture solution file |
+
+### Execution Order and Dependencies
+
+```
+Mouth (solution files + copy spec)
+  └──▶ Data (Rust implementation in lib.rs, uses Mouth's copy)
+         └──▶ Brand (integration tests, depends on Data's implementation)
+```
+
+- Mouth and Data can partially overlap: Data can scaffold the command skeleton while Mouth writes solution files. However, Data must use Mouth's exact framing strings.
+- Brand must wait for Data's implementation to be compilable before writing tests.
+
+### Acceptance Criteria
+
+1. `learn solution ex01-format-scoreboard` prints the reference solution after marking ex01 complete
+2. `learn solution ex01-format-scoreboard` fails with a clear message if ex01 is NOT complete
+3. `learn solution ex99-unknown` fails with "unknown exercise id"
+4. All 15 solution.rs files exist and contain compilable, idiomatic Rust
+5. `cargo test --package xtask` passes (existing + new tests)
+6. `cargo fmt --all -- --check` passes
+7. Dashboard and post-check messages mention `learn solution`
+8. No changes to progress.toml schema
+
+---
+
+### 2026-07-20T23-51-01: exercise_markers test must drop hardcoded count; assert banner-per-todo instead
+**By:** Mikey
+**What:** exercise_markers test must drop hardcoded count; assert banner-per-todo instead
+**References:** issue #1, xtask/tests/exercise_markers.rs, .github/skills/test-discipline/SKILL.md, commits: 7442d3a, 5878eb2, 08ac789
+**Why:** ### 2026-07-20T16:20: Retrospective — exercise_markers hardcoded count vs learner progress
+
+**Ceremony:** Retrospective (auto-triggered by test failure)
+**Facilitator:** Mikey (Learning Journey Lead)
+**Participants:** Mouth (solution author), Data (CLI author), Brand (tester/reviewer)
+
+## Root Cause
+
+The `exercise_markers` test (introduced at 7442d3a, Jul 20 14:14) hardcodes `assert_eq!(total_pairs, 18)`, treating the `todo!()` count as a static repository invariant. Learner commits 5878eb2 (14:29) and 08ac789 (16:04) correctly solved ex01–ex06, removing 7 `todo!()` stubs (18→11). This is intended learner behavior, not a product regression.
+
+The test was validated at approval time against pre-solved state. No agent anticipated that the learner's own progress on the same branch would invalidate the count assertion.
+
+## Decision
+
+1. **Remove the hardcoded count assertion** (`assert_eq!(total_pairs, 18)`). Replace with: "every `todo!()` in any exercise `src/lib.rs` must be immediately preceded by its 3-line banner." Assert the ratio is 1:1 (zero failures), not a fixed total.
+2. **Keep the 15-file assertion** — exercise directory count is structural and does not change when learners solve exercises.
+3. **Keep the banner adjacency logic** — the quality check ("banners exist where needed") remains valuable.
+4. **Owner:** Brand (test author). Scope: `xtask/tests/exercise_markers.rs` only.
+5. **Priority:** P2 — fix before merging the issue #1 PR, but does not invalidate issue #1 approved artifacts (7 unit + 22 integration tests all pass).
+6. **Does not block issue #1 approval.** Issue #1 commits (87b94f0, 11ab115, d10e260) are unrelated to the marker count; Brand's reviewer APPROVE stands.
+
+## Corrective Pattern
+
+Per the `test-discipline` skill: "When test assertions reference file counts or expected arrays, they must be kept in sync with disk reality." In a learning repo, disk reality *changes by design* when the learner progresses. Hardcoded inventory counts are anti-patterns here — use dynamic assertions instead.
+
+---
+
+### 2026-07-20: Solution Command Review — A3 Complete — ✅ APPROVE
+
+**By:** Brand (Challenge Tester)
+**Ceremony:** Mandatory Integration Review (issue #1, A3)
+**Timestamp:** 2026-07-20T16:20:49-07:00
+
+## Verdict: ✅ APPROVE — commits 87b94f0 and 11ab115
+
+Both dependency commits pass all four ceremony-required integration tests and all existing tests.
+
+## Tests Added (commit d10e260)
+
+| Test | Path | Contract item |
+|------|------|---------------|
+| `solution_completed` | cli.rs:19 | Exit 0; framing + exact content + footer |
+| `solution_incomplete` | cli.rs:20 | Nonzero; "complete {id}" + "learn check {id}" guidance |
+| `solution_unknown_id` | cli.rs:21 | Nonzero; "unknown exercise id" + id in message |
+| `solution_missing_file` | cli.rs:22 | Nonzero; "reference solution not yet available" + relative path |
+
+Discoverability assertions added to three existing tests:
+- `no_args_dashboard`: now asserts `learn solution` appears in key-commands block
+- `check_success`: asserts solution command advertised on first completion
+- `check_idempotent`: asserts solution command NOT re-shown on repeat check
+
+`TempWorkspace` gains `set_solution(world, exercise, content)` helper in `support/mod.rs`.
+
+## Test Results
+
+- 7 unit tests: ✅ pass
+- 22 integration tests (cli.rs): ✅ pass (18 prior + 4 new)
+- `exercise_markers`: ❌ pre-existing failure — see below
+
+## exercise_markers Failure Root Cause
+
+Failure: expected 18 todo!()/banner pairs, found 11.
+
+**Root cause: pre-existing — introduced by the learner's own solving commits, not by this branch's feature work.**
+
+Evidence:
+- Commits `5878eb2` (Mon Jul 20 14:29) and `08ac789` (Mon Jul 20 16:04) solved exercises ex01–ex06, removing 7 `todo!()` calls from `src/lib.rs` files.
+- Mouth's commit `87b94f0` only writes `hints/solution.rs` files — zero changes to `src/lib.rs`.
+- Data's commit `11ab115` only changes `xtask/src/lib.rs` — zero changes to exercise source files.
+- Neither `87b94f0` nor `11ab115` caused or contributed to the todo count drop.
+- The `exercise_markers` test needs to be updated to track the learner's progress (or be adjusted to count remaining stubs dynamically); that is out of scope for this A3 action item and should be a separate task.
+
+## Design Contract Verification
+
+| Contract item | Status | Evidence |
+|---------------|--------|----------|
+| 1. Completed → framed content, bytes preserved | ✅ | `solution_completed` |
+| 2. Incomplete → nonzero + check guidance | ✅ | `solution_incomplete` |
+| 3. Unknown ID → nonzero via existing behavior | ✅ | `solution_unknown_id` |
+| 4. Missing file → nonzero + relative path | ✅ | `solution_missing_file` |
+| 5. Dashboard advertises `learn solution <id>` | ✅ | `no_args_dashboard` assertion |
+| 6. First completion advertises; repeat does not | ✅ | `check_success` + `check_idempotent` |
+| 7. Existing behavior compatible | ✅ | All 18 prior tests pass |
+
+---
+
+### 2026-07-20: Framing Copy Contract — learn solution command (#1)
+**By:** Mouth (Game Designer)
+**What:** Exact player-facing copy for all five surfaces of the `learn solution` command.
+**Why:** Data needs these strings verbatim before implementing xtask/src/lib.rs. Mikey's D4 already established the structural contracts; this fills in the copy tone, exact text, and dashboard placement so Data has no blanks to fill.
+
+---
+
+## Surface 1 — Successful Solution Display
+
+```
+📖 Reference Solution — {title} ({id})
+────────────────────────────────────
+{solution file content}
+────────────────────────────────────
+Note: This is one idiomatic approach. Your solution may be equally valid.
+```
+
+- Title and id pulled from `campaign.toml` exercise metadata.
+- Separator is U+2500 BOX DRAWINGS LIGHT HORIZONTAL, 36 chars wide.
+- Body is the raw content of `hints/solution.rs` (syntax highlighting optional; not required).
+- The closing note is always printed; it frames this as a reference, not a verdict.
+
+## Surface 2 — Incomplete Exercise Guidance
+
+```
+error: complete {id} before viewing its solution.
+       Run `learn check {id}` to verify your work.
+```
+
+- Printed to **stderr**, exit 1.
+- The second line is indented 7 spaces to align with the first line's content.
+- The command in backticks is literal; no ANSI coloring required.
+
+## Surface 3 — Missing Solution Artifact
+
+```
+error: reference solution not yet available: {path}
+```
+
+- Printed to **stderr**, exit 1.
+- `{path}` is the relative path from the repo root (e.g.
+  `exercises/world-02-ownership/ex07-move-inventory/hints/solution.rs`).
+- No blame language; treats missing file as a gap to fill, not a failure state.
+
+## Surface 4 — Dashboard Discoverability
+
+After a successful `learn check`, append this line to the completion output:
+
+```
+  learn solution {id}  — view a reference solution
+```
+
+- Two leading spaces; single em-space separation between command and description.
+- Only shown when the check just passed (first completion), not on re-checks.
+- Placement: below the `+XP` line, above the next-quest suggestion.
+
+Also add to the no-arg dashboard's "key commands" block:
+
+```
+  learn solution <id>  — view reference solution (after completing)
+```
+
+## Surface 5 — Post-Check Completion Message
+
+Full output after first solve:
+
+```
+✅ {id} complete! +{xp} XP (total: {total_xp}). Next: {next_id}
+   learn solution {id}  — see a reference solution now
+```
+
+- Second line is indented 3 spaces.
+- Only appears on first completion; re-checks use the existing "verified again" line.
+
+---
+
+## Implementation Notes for Data
+
+- All five strings are display-only; no new progress state needed beyond what D1–D5 defined.
+- `MissingSolution` error variant name already agreed in Mikey's D4.
+- The "Note: This is one idiomatic approach." footer text is fixed — do not interpolate.
+- Color/ANSI rules follow existing convention: apply when stdout is a TTY, strip otherwise.
+
+---
+
+### 2026-07-20: No hardcoded todo!() counts in learning repo tests (policy)
+**By:** Mikey
+**What:** In learn-rust-helper, tests must never hardcode the number of todo!() stubs as a repository invariant.
+**Why:** Learners solve exercises by removing todo!() calls — this is intended behavior, not a regression. Inventory tests should assert structural properties (e.g., every remaining todo!() has its banner) not fixed totals. Decided in retrospective 2026-07-20T16:20.
+
+---
+
+**Policy:** Inventory tests should assert structural properties (e.g., every remaining todo!() has its banner) not fixed totals. The number of stubs decreases as learners solve exercises—this is intended behavior, not a regression that should trigger test failures.
+

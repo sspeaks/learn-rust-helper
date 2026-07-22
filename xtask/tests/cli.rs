@@ -1,5 +1,8 @@
 mod support;
 
+use std::path::Path;
+use std::process::Command;
+
 use support::{assert_contains, assert_not_contains, TempWorkspace};
 
 // ── 1. no_args_dashboard ────────────────────────────────────────────────────
@@ -414,4 +417,35 @@ completed = ["ex01-alpha"]
         &stderr,
         "exercises/world-01-alpha/ex01-alpha/hints/solution.rs",
     );
+}
+
+// ── 23. production_campaign_status_succeeds ──────────────────────────────────
+
+/// Regression guard: the binary compiled from current source must accept the
+/// production 6-world/34-exercise campaign without any hard-coded world-count or
+/// exercise-count invariant (the stale Nix binary enforced "exactly 3 worlds" and
+/// "exactly 15 exercises", which broke `learn check` after the campaign was expanded).
+#[test]
+fn production_campaign_status_succeeds() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .expect("xtask crate should have workspace parent");
+
+    let out = Command::new(support::learn_bin())
+        .arg("status")
+        .current_dir(root)
+        .output()
+        .expect("failed to run learn status against production campaign");
+
+    assert!(
+        out.status.success(),
+        "learn status must succeed against the production 6-world campaign:\n{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    // World 1 (Foundations, 5 exercises) and world 6 (Archive Core, 6 exercises)
+    // must both appear, proving no fixed 3-world ceiling is enforced.
+    assert_contains(&stdout, "Foundations");
+    assert_contains(&stdout, "Archive Core");
 }

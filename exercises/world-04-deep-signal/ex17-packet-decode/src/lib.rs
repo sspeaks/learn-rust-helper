@@ -1,5 +1,7 @@
 use serde::Deserialize;
 
+use crate::PacketDecodeError::EmptyPacketId;
+
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct Packet {
     pub id: String,
@@ -14,15 +16,20 @@ pub enum PacketDecodeError {
 }
 
 pub fn decode_packet(json_payload: &str) -> Result<Packet, PacketDecodeError> {
-    // ══════════════════════════════════════════════════════════════
-    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-    // ══════════════════════════════════════════════════════════════
-    todo!("Deserialize one packet and reject empty packet IDs")
+    serde_json::from_str::<Packet>(json_payload)
+        .map_err(PacketDecodeError::InvalidJson)
+        .and_then(|pack| {
+            if pack.id.is_empty() {
+                Err(EmptyPacketId)
+            } else {
+                Ok(pack)
+            }
+        })
 }
 
 pub fn decode_packet_batch(json_payloads: &[&str]) -> Result<Vec<Packet>, PacketDecodeError> {
-    // ══════════════════════════════════════════════════════════════
-    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-    // ══════════════════════════════════════════════════════════════
-    todo!("Decode each payload with decode_packet and preserve order")
+    json_payloads
+        .iter()
+        .map(|payload| decode_packet(payload))
+        .collect()
 }

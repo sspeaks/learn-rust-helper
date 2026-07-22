@@ -33,6 +33,19 @@
             ];
             # Helps rust-analyzer and IDEs locate standard-library source.
             RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
+            # Build learn from the local working tree and put target/debug first in
+            # PATH so the freshly-compiled binary always shadows the Nix-store copy.
+            # This prevents stale binaries (built before source changes) from being
+            # picked up as `learn` when running inside the dev shell.
+            shellHook = ''
+              if ! cargo build --package xtask --bin learn; then
+                echo >&2 ""
+                echo >&2 "error: 'cargo build --package xtask --bin learn' failed — see errors above."
+                echo >&2 "Refusing to continue with the stale Nix-store binary. Fix the build first."
+                exit 1
+              fi
+              export PATH="$PWD/target/debug:$PATH"
+            '';
           };
         }
       );
