@@ -1,6 +1,6 @@
 # learn-rust — A Gamified Rust Learning Campaign
 
-Welcome to **learn-rust**, a progression-based campaign that teaches Rust through 15 increasingly complex exercises. You'll build real, working programs by completing stubs—not a tutorial, not a textbook, but a series of quests where you write the code that matters.
+Welcome to **learn-rust**, a progression-based campaign that teaches Rust through 34 increasingly complex exercises. You'll build real, working programs by completing stubs—not a tutorial, not a textbook, but a series of quests where you write the code that matters.
 
 ## Setup & Quick Start
 
@@ -106,8 +106,12 @@ Earn XP for each completed exercise. Progress through ranks as your skill grows:
 | 0 | Cadet | 0 | `◊` |
 | 1 | Operator | 300 | `☆` |
 | 2 | Specialist | 800 | `◆` |
-| 3 | Commander | 1500 | `▲` |
-| 4 | Legend | 2300 | `◈` |
+| 3 | Commander | 1,500 | `▲` |
+| 4 | Legend | 2,300 | `◈` |
+| 5 | Vanguard | 3,500 | `✦` |
+| 6 | Admiral | 5,500 | `⬡` |
+| 7 | Architect | 7,500 | `⬟` |
+| 8 | Sovereign | 10,000 | `⬢` |
 
 XP is awarded for first-time completion. Hints are free; solving without them is its own reward.
 
@@ -123,7 +127,7 @@ Learn the core language: functions, variables, types, and control flow. These ex
 | 4 | Energy Loop | Ranges & iteration | 130 |
 | 5 | Message Normalizer | String & &str | 140 |
 
-### World 2: Ownership (5 exercises, 800 XP)
+### World 2: Ownership (5 exercises, 850 XP)
 
 Master Rust's memory model: moves, borrows, mutable references, and the borrow checker. These exercises teach you to write fast, safe code.
 
@@ -135,7 +139,7 @@ Master Rust's memory model: moves, borrows, mutable references, and the borrow c
 | 9 | Station Crew | Structs & methods | 180 |
 | 10 | Command Router | Enums & exhaustive matching | 190 |
 
-### World 3: Collections & Errors (5 exercises, 900 XP)
+### World 3: Collections & Errors (5 exercises, 1,170 XP)
 
 Build with real data structures: vectors, hash maps, Option, Result, and custom error types. Capstone synthesizes all three worlds.
 
@@ -146,6 +150,46 @@ Build with real data structures: vectors, hash maps, Option, Result, and custom 
 | 13 | Mission Lookup | Option type | 220 |
 | 14 | Config Loader | Result & custom errors | 240 |
 | 15 | Salvage Capstone | All concepts combined | 300 |
+
+### World 4: Deep Signal (7 exercises, 2,800 XP)
+
+Connect to remote services with synchronous and async HTTP clients, parse structured JSON payloads, and build a concurrent health-reporting pipeline. Worlds 4–6 require external crates (`ureq`, `reqwest`, `serde`, `tokio`, `rayon`, `rusqlite`) managed automatically by Cargo and provided by the Nix dev shell—no additional setup needed.
+
+| # | Quest | Concept | XP |
+|---|-------|---------|-----|
+| 16 | Beacon Ping | Synchronous HTTP & error mapping | 320 |
+| 17 | Packet Decode | JSON deserialization & batch validation | 350 |
+| 18 | Signal Timeout | Timeout-aware HTTP & layered errors | 370 |
+| 19 | Relay Dispatch | HTTP POST with JSON serialization | 390 |
+| 20 | Async Handshake | async fn and .await with reqwest | 420 |
+| 21 | Channel Broadcast | Concurrent async requests with join | 450 |
+| 22 | Deep Signal Capstone | Async pipeline & concurrent aggregation | 500 |
+
+### World 5: Parallel Ops (6 exercises, 2,560 XP)
+
+Harness OS threads, message channels, shared-state locks, and data-parallelism to build safe, concurrent programs—and combine everything in a multi-stage deterministic pipeline.
+
+| # | Quest | Concept | XP |
+|---|-------|---------|-----|
+| 23 | Crew Dispatch | OS threads & JoinHandle | 350 |
+| 24 | Cargo Channel | MPSC channels & message passing | 380 |
+| 25 | Mutex Lockdown | Arc\<Mutex\<T\>\> for shared mutable state | 410 |
+| 26 | Sensor Array | Data parallelism with rayon | 440 |
+| 27 | RwLock Protocol | Arc\<RwLock\<T\>\> for concurrent read access | 460 |
+| 28 | Parallel Ops Capstone | Threads, channels, and locks combined | 520 |
+
+### World 6: Archive Core (6 exercises, 2,750 XP)
+
+Bootstrap a SQLite archive, write and query crew records, enforce transactional integrity, evolve your schema with migrations, and cap the campaign with a cross-world async-to-sync persistence pipeline.
+
+| # | Quest | Concept | XP |
+|---|-------|---------|-----|
+| 29 | Schema Bootstrap | SQLite schema initialization with rusqlite | 380 |
+| 30 | Crew Manifest | Parameterized INSERT and SELECT | 410 |
+| 31 | Mission Ledger | Database transactions and rollback | 440 |
+| 32 | Archive Query | Dynamic filtered queries | 470 |
+| 33 | Data Migration | Schema migrations and versioning | 490 |
+| 34 | Archive Capstone | Async HTTP and synchronous SQLite pipeline | 560 |
 
 ## How It Works
 
@@ -299,7 +343,10 @@ learn-rust/
 │   │   │       └── hint3.md      # Pseudocode outline
 │   │   └── ... (4 more exercises)
 │   ├── world-02-ownership/       # (5 exercises)
-│   └── world-03-collections-errors/  # (5 exercises)
+│   ├── world-03-collections-errors/  # (5 exercises)
+│   ├── world-04-deep-signal/     # (7 exercises — HTTP, async, JSON)
+│   ├── world-05-parallel-ops/    # (6 exercises — threads, channels, locks)
+│   └── world-06-archive-core/    # (6 exercises — SQLite, migrations)
 └── .learn-rust/
     └── progress.toml             # Your local progress (gitignored)
 ```
@@ -363,6 +410,6 @@ Happy coding. You've got this. 🦀
 
 ---
 
-**Last updated:** 2026-07-19  
+**Last updated:** 2026-07-21  
 **Campaign schema:** v1  
-**Total exercises:** 15 | **Total XP available:** 2,620 | **Legend threshold:** 2,300
+**Total exercises:** 34 | **Total XP available:** 10,730 | **Sovereign threshold:** 10,000

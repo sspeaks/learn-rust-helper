@@ -458,3 +458,287 @@ All contract points verified, all gating checks pass. Implementation by Data and
 4. **Nix derivation status:** Both `workspace-check` and `xtask-tests` rebuilt against current source tree and passed.
 
 ---
+
+
+---
+
+### 2026-07-21: Session Finalization — Advanced Curriculum Complete: 6 Worlds/34 Exercises/10,730 XP — ✅ APPROVED
+
+**By:** Mikey (Learning Journey Lead)  
+**Consolidated Decision:** Review cycle + revision cycle + recovery cycle outcome  
+**Timestamp:** 2026-07-21  
+**Session Lead Participants:** Data (Rust Engineer), Mouth (Game Designer), Brand (Test Architect)
+
+## Consolidated Outcome: ✅ APPROVED
+
+Final campaign: **6 worlds, 34 exercises, 9 ranks, 10,730 XP, ex01→ex34 linear chain**
+
+---
+
+## Cycle 1: Final Coherence & Correctness Review (16:16:00-07:00) — ❌ REJECT (Material Defects)
+
+### Validation Evidence (Passing)
+- ✅ `cargo check --workspace`
+- ✅ `cargo test --package xtask` (23 tests pass)
+- ✅ All 19 test targets compile
+- ✅ `learn status` shows 6 worlds, 34 exercises
+- ✅ `learn next` returns `ex16-beacon-ping`
+- ✅ 156 tests, 8-10 per exercise, deterministic
+- ✅ No solution leaks, no secrets, no public network
+
+### Material Defects
+
+**Defect A: Rustfmt Violations (90 diffs in 21 files)**
+- 19 test files (tests/solve.rs) — Author: Brand
+- 2 src/lib.rs files (ex27-rwlock-protocol, ex29-schema-bootstrap) — Author: Data
+- Identical defect class to prior Cycle 1 rejection; gating criterion
+
+**Defect B: ex16 README Contradicts Test Behavior**
+- Edge Cases section claims non-2xx → Ok(status), contradicts Behavioral Rule 5 and test assertions
+- Tests expect Err(BeaconPingError::Request) for HTTP errors
+- Teaching error; learner would implement wrong behavior
+- Author: Mouth
+
+### Lockout & Reassignment
+| Defect | Original Author | Locked | Revision Owner |
+|--------|-----------------|--------|----------------|
+| A (tests) | Brand | Brand | **Data** |
+| A (src) | Data | Data | **Mouth** |
+| B (README) | Mouth | Mouth | **Data** |
+
+---
+
+## Cycle 2: Generalized xtask Validation (23:15:33-07:00) — ✅ DECISION RECORDED
+
+**By:** Data (Rust Engineer)
+
+Removed hardcoded campaign size constraints (3 worlds / 5 ex/world / 15 total). Implemented structural validation:
+- Non-empty world list, non-empty exercises per world
+- Unique IDs, packages, valid formats
+- Prerequisite/unlock existence, self-reference guards
+- On-disk Cargo.toml presence
+- Added regression tests for 6W/34E production shape and ex15→ex16 transition
+
+---
+
+## Cycle 3: Strict Revision Re-Review (16:30:00-07:00) — ✅ APPROVE
+
+**By:** Mikey (Learning Journey Lead)
+
+### Finding A: Rustfmt Violations — ✅ RESOLVED
+- All 19 `tests/solve.rs` files: zero diffs after Data's independent revision
+- `ex27-rwlock-protocol/src/lib.rs` + `ex29-schema-bootstrap/src/lib.rs`: zero diffs after Mouth's independent revision
+- `cargo fmt --check` passes on all 38 new .rs files
+
+### Finding B: ex16 README Contradiction — ✅ RESOLVED
+- Edge Cases now reads: "...function returns `Err(BeaconPingError::Request(...))`..."
+- Aligns with Behavioral Rule 5, test assertions, and API contract
+- Data's independent revision (Mouth locked out)
+
+### Revision Integrity
+- ✅ Mechanical/scoped (formatting-only, wording-only)
+- ✅ No semantics altered
+- ✅ No solution leaks, no test weakening
+- ✅ Lockout ownership strictly observed
+
+### Lockout Resolution
+All revision-cycle lockouts cleared:
+- Brand: Cleared (was locked out of test files)
+- Mouth: Cleared (was locked out of ex16 README)
+- Data: Cleared (was locked out of ex27/ex29 source)
+
+### Gates Passed
+| Gate | Status |
+|------|--------|
+| `cargo fmt --check` (38 new files) | ✅ Pass |
+| `cargo check --workspace` | ✅ Pass |
+| `cargo test --package xtask` (23 tests) | ✅ Pass |
+| All 19 test targets compile | ✅ Pass |
+| `learn status` | ✅ Pass |
+| `learn next` | ⚠️ Note (see follow-up) |
+| `nix flake check path:.` | ✅ Pass |
+
+### Follow-Up Item (Non-Blocking)
+Campaign integration gap: campaign.toml only defines worlds 1-3 (ex01-ex15). Worlds 4-6 (ex16-ex34) not yet registered. This predates revision cycle (gap created in persistence race, not revision defect). Assigned as NEW WORK ITEM to Data (non-blocking).
+
+---
+
+## Cycle 4: Final Recovery Review (16:47:00-07:00) — ✅ APPROVE
+
+**By:** Mikey (Learning Journey Lead)  
+**Recovery Authors:** Mouth (campaign.toml, README.md recovery), Data (xtask/src/lib.rs tests recovery)
+
+### Context: Tracked-File Persistence Race
+Previous git state incident removed:
+- campaign.toml (6 worlds, 34 exercises)
+- README.md (Advanced Worlds section + 10,730 XP total)
+- xtask/src/lib.rs test regression checks
+
+All three files recovered sequentially by authors. Mikey conducted final recovery verification.
+
+### Gates Passed (Post-Recovery)
+| Gate | Result |
+|------|--------|
+| `cargo fmt --check` (38 new .rs + xtask) | ✅ Clean |
+| `cargo check --workspace` | ✅ Pass |
+| `cargo test --package xtask` (35 tests) | ✅ 12 unit + 22 CLI + 1 marker = 35 pass |
+| All 19 solve targets compile | ✅ All 19 |
+| `nix flake check path:.` | ✅ 2 checks pass |
+| `learn next` (fresh state) | ✅ Returns `ex16-beacon-ping` |
+| `learn status` shows worlds 4-6 | ✅ Deep Signal 0/7, Parallel Ops 0/6, Archive Core 0/6 |
+| `git diff --check` (product files) | ⚠️ README.md:413 trailing spaces (Markdown convention, non-blocking) |
+| 5 recovery regression tests | ✅ All 5 pass |
+| No solution leaks | ✅ All 19 src/lib.rs have `todo!()` |
+| No live network/credentials | ✅ wiremock + in-memory SQLite |
+| ex34 async/sync boundary | ✅ Staged API maintained |
+
+### Campaign Shape Confirmed
+- **6 worlds:** [5, 5, 5, 7, 6, 6] exercises per world
+- **34 exercises:** Linear chain ex01→ex34
+- **10,730 total XP** (verified against README)
+- **9 ranks:** Cadet→Sovereign with thresholds 3500/5500/7500/10000
+- **Unlock chain verified:** ex15 → ex16-beacon-ping (production test + `learn next`)
+- **Per-world XP verified:** W1=600, W2=850, W3=1170, W4=2800, W5=2560, W6=2750
+
+### Artifact Inventory
+- 19 exercise crates with src/lib.rs stubs
+- 19 READMEs with Setup Notes
+- 57 hints (3 per exercise)
+- 19 test files with 156 behavioral test cases
+- All tracked files present and valid
+
+### Lockout Status
+No lockouts applied. All agents (Data, Mouth, Brand) eligible for future work.
+
+---
+
+## Session Summary
+
+**Design Review → Implementation → Rejection Cycle → Revision Cycle → Recovery Cycle → Final Approval**
+
+- ✅ Design approved (3 worlds, 19 exercises)
+- ✅ Implementation completed (scaffolding, tests, docs)
+- ❌ Cycle 1 rejected (rustfmt, README contradiction)
+- ✅ Cycle 3 revisions approved (all defects resolved)
+- ✅ Cycle 4 recovery approved (tracked files restored, all gates pass)
+
+**Final State:** Advanced curriculum expansion complete. 6 worlds, 34 exercises, 10,730 XP, ex01→ex34 linear progression. All material gates pass. No lockouts remain. Campaign ready for production learner testing.
+
+**Next Phase:** Campaign fully functional. All exercises scaffolded with tests. Documentation complete. Ready for learner onboarding and feedback loops.
+
+
+---
+
+## FINAL HEALTH REPORT — 2026-07-21T16:53:59.008-07:00
+
+### State Backend
+- **Provider:** FSStorageProvider (local)
+- **Status:** ✅ Fully operational
+
+### Decisions & Inbox Management
+- **decisions.md size:** 33,746 bytes (threshold: 20KB archival, 51KB aggressive archival)
+- **Status:** ✅ Within normal range, no archival needed
+- **Active entries:** 15 decisions (including consolidated Session Finalization entry)
+- **Inbox state:** ✅ Empty (all 4 entries merged and deleted)
+
+### Session Finalization Consolidation
+**Merged from 4 inbox entries:**
+1. Mikey-reject-worlds-4-6-delivery-rustfmt-violations-90-d.md
+2. Data-generalized-xtask-campaign-validation-to-structura.md
+3. Mikey-approve-revision-cycle-findings-a-b-fully-resolved.md
+4. Mikey-final-review-advanced-curriculum-recovery-approve.md
+
+**Result:** Single consolidated Session Finalization decision in canonical decisions.md capturing full review/revision/recovery cycle
+
+### Orchestration & Session Logs Created
+- ✅ Orchestration log: Mikey session finalization (review cycles summary)
+- ✅ Orchestration log: Data contribution (xtask validation, revisions, recovery)
+- ✅ Orchestration log: Mouth contribution (documentation, revisions, recovery)
+- ✅ Orchestration log: Brand contribution (test delivery, revision outcomes)
+- ✅ Session log: Final session log (complete journey, metrics, next-phase)
+
+### Agent Histories
+| Agent | Size | Status |
+|-------|------|--------|
+| Data | 8.5 KB | ✅ OK |
+| Mikey | 5.4 KB | ✅ OK |
+| Mouth | 3.7 KB | ✅ OK |
+| Brand | 3.9 KB | ✅ OK |
+| Scribe | 2.1 KB | ✅ OK |
+| Others | <1 KB | ✅ OK |
+
+**Summary:** All agent histories well under 15KB threshold; no summarization needed.
+
+### Final Campaign State: ✅ APPROVED
+
+| Metric | Value | Status |
+|--------|-------|--------|
+| Worlds | 6 | ✅ |
+| Exercises | 34 | ✅ |
+| Total XP | 10,730 | ✅ |
+| Ranks | 9 | ✅ |
+| Tests | 156 | ✅ |
+| Hints | 57 | ✅ |
+| Unlock Chain | ex01→ex34 linear | ✅ |
+
+### Acceptance Criteria (All ✅ Pass)
+1. ✅ `cargo fmt --check` (zero diffs post-revision)
+2. ✅ `cargo check --workspace`
+3. ✅ `cargo test --package xtask` (35 tests pass)
+4. ✅ All 19 solve targets compile
+5. ✅ `nix flake check path:.`
+6. ✅ `learn next` → ex16-beacon-ping
+7. ✅ `learn status` shows 6 worlds
+8. ✅ 156 behavioral tests (8-10/ex, 55/45 happy/error)
+9. ✅ No solution leaks, credentials, live network
+10. ✅ ex34 async/sync boundary correct
+
+### Review Cycle Outcomes
+| Cycle | Verdict | Status |
+|-------|---------|--------|
+| Cycle 1 (Rejection) | ❌ REJECT (rustfmt + README) | Defects identified |
+| Cycle 2 (xtask fix) | N/A | Generalized validation |
+| Cycle 3 (Revision) | ✅ APPROVE | All defects resolved |
+| Cycle 4 (Recovery) | ✅ APPROVE | All files recovered, gates pass |
+
+### Lockout Lifecycle
+- **Assignment (Cycle 1):** Brand, Mouth, Data all locked
+- **Resolution (Cycle 3):** All independent revisions completed
+- **Clearance (Cycle 3 Approval):** All lockouts cleared ✅
+- **Final Status:** No outstanding lockouts
+
+### File Persistence Race Recovery
+| File | Status |
+|------|--------|
+| campaign.toml | ✅ Recovered by Mouth |
+| README.md | ✅ Recovered by Mouth |
+| xtask/src/lib.rs tests | ✅ Recovered by Data |
+
+### Mutable State Persistence
+- ✅ All writes via `squad_state_*` tools (FSStorageProvider)
+- ✅ No git commits made
+- ✅ No branch switches
+- ✅ No destructive git operations
+- `.squad/identity/now.md` updated by runtime (expected)
+- All agent histories updated via squad_state_append (expected)
+- All orchestration/session logs created via squad_state_write (expected)
+
+### Session Metrics
+| Metric | Value |
+|--------|-------|
+| Exercises Implemented | 19 (ex16–ex34) |
+| Tests Implemented | 156 |
+| Hints Created | 57 |
+| Review Cycles | 4 |
+| Defects Found | 2 (Cycle 1) |
+| Defects Resolved | 2 (Cycle 3) |
+| Files Lost | 3 (persistence race) |
+| Files Recovered | 3 |
+| Final Approval Timestamp | 2026-07-21T16:47:00-07:00 |
+
+### Session Status
+✅ **COMPLETE.** All review cycles passed. All defects resolved. All files recovered. Campaign approved for production learner testing. No outstanding lockouts or blockers. All 10 acceptance criteria gates pass. Campaign ready for deployment.
+
+---
+
+**Scribe Session Finalization Report: SESSION COMPLETE**

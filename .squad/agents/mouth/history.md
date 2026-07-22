@@ -36,3 +36,34 @@ Initial setup complete. The experience should feel like a campaign, with visible
 - Exercise READMEs: All use `learn check`/`learn hint`, zero `cargo xtask` references
 
 **Status:** ✅ Approved (Cycle 3) — Learner docs complete.
+
+---
+
+### 2026-07-21T16:40:10.072-07:00: Advanced Campaign Recovery
+
+**Trigger:** Concurrent task merge reverted `campaign.toml` and `README.md` to Worlds 1–3 only. All 19 World 4–6 exercise READMEs and 57 hints survived intact. Prior reviewer lockouts cleared before this task.
+
+**Files recovered:**
+- `campaign.toml`: Added 4 new ranks (Vanguard ✦ 3500, Admiral ⬡ 5500, Architect ⬟ 7500, Sovereign ⬢ 10000). Changed ex15 `unlocks` from `[]` to `["ex16-beacon-ping"]`. Appended Worlds 4 (7 exercises, 2,800 XP), 5 (6 exercises, 2,560 XP), 6 (6 exercises, 2,750 XP) with full linear prerequisite/unlock chain ex01→ex34.
+- `README.md`: Updated exercise count (15→34), total XP (2,620→10,730), corrected World 2/3 XP figures (850/1,170), added Worlds 4–6 tables with dependency notes, updated file structure, updated rank table with new entries, updated footer.
+
+**Validation:** Python tomli parse confirmed 6 worlds, 34 exercises, 9 ranks, zero prereq/unlock issues, single linear chain ex01→ex34 terminal, total XP 10,730. `git status` confirmed both files modified (M README.md, M campaign.toml).
+
+**Status:** ✅ Complete — no exercise README or hint was altered.
+
+
+---
+
+## 2026-07-21T16:53:59.008-07:00 | Session Finalization Contribution
+
+**Role:** Game Designer
+
+**Final Contributions:**
+- All ex27/ex29 source revisions (rustfmt fixes)
+- Recovery: Restored campaign.toml (6W/34E) after persistence race
+- Recovery: Restored README.md Advanced section after persistence race
+- Verified per-world XP totals (W1=600, W2=850, W3=1170, W4=2800, W5=2560, W6=2750)
+
+**Lockout Status:** Cleared ✅
+
+**Gates Owned:** All ✅ pass

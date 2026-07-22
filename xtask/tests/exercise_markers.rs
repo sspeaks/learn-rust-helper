@@ -62,8 +62,8 @@ fn every_exercise_has_mission_banner_for_each_todo() {
     let files = collect_exercise_lib_rs();
     assert_eq!(
         files.len(),
-        15,
-        "expected exactly 15 exercise src/lib.rs files; found {}",
+        34,
+        "expected exactly 34 exercise src/lib.rs files; found {}",
         files.len()
     );
 

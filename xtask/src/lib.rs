@@ -271,9 +271,9 @@ fn validate_campaign(root: &Path, campaign: &Campaign) -> Result<(), XtaskError>
         ));
     }
 
-    if campaign.worlds.len() != 3 {
+    if campaign.worlds.is_empty() {
         return Err(XtaskError::InvalidCampaign(
-            "expected exactly 3 worlds".to_owned(),
+            "campaign must contain at least one world".to_owned(),
         ));
     }
 
@@ -336,9 +336,9 @@ fn validate_campaign(root: &Path, campaign: &Campaign) -> Result<(), XtaskError>
             )));
         }
 
-        if world.exercises.len() != 5 {
+        if world.exercises.is_empty() {
             return Err(XtaskError::InvalidCampaign(format!(
-                "world {} must contain exactly 5 exercises",
+                "world {} must contain at least one exercise",
                 world.id
             )));
         }
@@ -438,12 +438,6 @@ fn validate_campaign(root: &Path, campaign: &Campaign) -> Result<(), XtaskError>
                 )));
             }
         }
-    }
-
-    if seen_exercise_ids.len() != 15 {
-        return Err(XtaskError::InvalidCampaign(
-            "expected exactly 15 exercises".to_owned(),
-        ));
     }
 
     Ok(())
@@ -883,6 +877,8 @@ fn cmd_solution(root: &Path, id: &str) -> Result<(), XtaskError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::fs;
+    use tempfile::tempdir;
 
     fn sample_campaign() -> Campaign {
         toml::from_str(
@@ -1029,6 +1025,176 @@ mod tests {
             "#,
         )
         .expect("sample campaign should parse")
+    }
+
+    fn expect_invalid_campaign(result: Result<(), XtaskError>) -> String {
+        match result {
+            Err(XtaskError::InvalidCampaign(message)) => message,
+            Err(err) => panic!("expected invalid campaign error, got: {err}"),
+            Ok(()) => panic!("expected invalid campaign error, got success"),
+        }
+    }
+
+    fn write_campaign_exercise_manifests(root: &Path, campaign: &Campaign) {
+        for world in &campaign.worlds {
+            for exercise in &world.exercises {
+                let exercise_dir = root.join("exercises").join(&world.id).join(&exercise.id);
+                fs::create_dir_all(&exercise_dir).expect("create exercise directory");
+                fs::write(
+                    exercise_dir.join("Cargo.toml"),
+                    format!(
+                        "[package]\nname = \"{}\"\nversion = \"0.1.0\"\nedition = \"2021\"\n",
+                        exercise.id
+                    ),
+                )
+                .expect("write exercise Cargo.toml");
+            }
+        }
+    }
+
+    fn sample_rank() -> Rank {
+        Rank {
+            id: "cadet".to_owned(),
+            name: "Cadet".to_owned(),
+            min_xp: 0,
+            badge: "◊".to_owned(),
+        }
+    }
+
+    #[test]
+    fn campaign_validation_accepts_variable_world_sizes() {
+        let campaign: Campaign = toml::from_str(
+            r#"
+                schema_version = 1
+                title = "Variable World Sizes"
+
+                [[ranks]]
+                id = "cadet"
+                name = "Cadet"
+                min_xp = 0
+                badge = "◊"
+
+                [[ranks]]
+                id = "pilot"
+                name = "Pilot"
+                min_xp = 100
+                badge = "☆"
+
+                [[worlds]]
+                id = "world-01-alpha"
+                name = "Alpha"
+                theme = "Basics"
+                unlock_text = "Start here"
+
+                [[worlds.exercises]]
+                id = "ex01-alpha"
+                package = "ex01-alpha"
+                title = "Alpha"
+                skill = "A"
+                xp = 10
+                unlocks = ["ex02-beta"]
+
+                [[worlds.exercises]]
+                id = "ex02-beta"
+                package = "ex02-beta"
+                title = "Beta"
+                skill = "B"
+                xp = 10
+                prerequisites = ["ex01-alpha"]
+                unlocks = ["ex03-gamma"]
+
+                [[worlds]]
+                id = "world-02-beta"
+                name = "Beta"
+                theme = "More Basics"
+                unlock_text = "Continue"
+
+                [[worlds.exercises]]
+                id = "ex03-gamma"
+                package = "ex03-gamma"
+                title = "Gamma"
+                skill = "C"
+                xp = 10
+                prerequisites = ["ex02-beta"]
+            "#,
+        )
+        .expect("campaign should parse");
+
+        let dir = tempdir().expect("temp dir should be created");
+        write_campaign_exercise_manifests(dir.path(), &campaign);
+        validate_campaign(dir.path(), &campaign).expect("variable world sizes should validate");
+    }
+
+    #[test]
+    fn campaign_validation_rejects_zero_worlds() {
+        let campaign = Campaign {
+            schema_version: CAMPAIGN_SCHEMA_VERSION,
+            title: "No Worlds".to_owned(),
+            ranks: vec![sample_rank()],
+            worlds: Vec::new(),
+        };
+
+        let message = expect_invalid_campaign(validate_campaign(Path::new("."), &campaign));
+        assert_eq!(message, "campaign must contain at least one world");
+    }
+
+    #[test]
+    fn campaign_validation_rejects_empty_world() {
+        let campaign = Campaign {
+            schema_version: CAMPAIGN_SCHEMA_VERSION,
+            title: "Empty World".to_owned(),
+            ranks: vec![sample_rank()],
+            worlds: vec![World {
+                id: "world-01-alpha".to_owned(),
+                name: "Alpha".to_owned(),
+                theme: "Basics".to_owned(),
+                unlock_text: "Start here".to_owned(),
+                exercises: Vec::new(),
+            }],
+        };
+
+        let message = expect_invalid_campaign(validate_campaign(Path::new("."), &campaign));
+        assert_eq!(
+            message,
+            "world world-01-alpha must contain at least one exercise"
+        );
+    }
+
+    #[test]
+    fn production_campaign_has_expected_expanded_shape() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .parent()
+            .expect("xtask crate should have workspace parent");
+        let campaign = load_campaign(root).expect("production campaign should load");
+
+        assert_eq!(campaign.worlds.len(), 6);
+        assert_eq!(
+            campaign
+                .worlds
+                .iter()
+                .map(|world| world.exercises.len())
+                .collect::<Vec<_>>(),
+            vec![5, 5, 5, 7, 6, 6]
+        );
+        assert_eq!(campaign.exercises_in_order().len(), 34);
+        assert_eq!(campaign.ranks.len(), 9);
+    }
+
+    #[test]
+    fn production_next_after_first_fifteen_is_ex16_beacon_ping() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .parent()
+            .expect("xtask crate should have workspace parent");
+        let campaign = load_campaign(root).expect("production campaign should load");
+        let ordered = campaign.exercises_in_order();
+        let completed: BTreeSet<_> = ordered
+            .iter()
+            .take(15)
+            .map(|exercise_ref| exercise_ref.exercise.id.clone())
+            .collect();
+
+        let next = choose_next_exercise(&campaign, &completed).expect("next exercise expected");
+        assert_eq!(next.exercise.id, "ex16-beacon-ping");
     }
 
     #[test]

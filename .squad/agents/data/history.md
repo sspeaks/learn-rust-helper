@@ -64,3 +64,85 @@ Your deliverables (4 items):
 - ✅ Zero API/behavior changes; 100% backward compatible
 
 Focus: Ready for integration/merge. Archive: `log/2026-07-20T13-45-24.420-07-00-final-closeout.md`
+
+
+## 2026-07-21: Revision — Rustfmt + README Edge Case Fix
+
+**Assigned:** Data (Independent Revision Owner, strict lockout)  
+**Ceremony:** Reviewer Rejection Protocol follow-up  
+**Timestamp:** 2026-07-21T15:35:48.817-07:00
+
+### Reviewer Findings Addressed
+
+**A. Rustfmt formatting diffs in 19 new `tests/solve.rs` files:**
+- Applied `cargo fmt --package <pkg>` to all 19 test targets individually (world-04-deep-signal ex16-22, world-05-parallel-ops ex23-28, world-06-archive-core ex29-34)
+- Verified zero formatting diffs remain with targeted `cargo fmt -- --check` per package
+- No other Rust files modified
+
+**B. Contradictory edge-case statement in ex16 README:**
+- **Original:** "A server that responds with a non-2xx status (the function should still return `Ok(BeaconPing { status: 404, ... })` — HTTP errors are reflected in the status field, not as an `Err`)."
+- **Issue:** Contradicts Behavioral Rule 5 ("Any transport or HTTP-level failure from ureq maps to `BeaconPingError::Request`") and tests (`ping_handles_not_found_as_request_error` expects `Err(BeaconPingError::Request(...))` for 404/503)
+- **Fixed to:** "A server that responds with a non-2xx status (the function returns `Err(BeaconPingError::Request(...))` carrying the ureq error, which preserves the status code in `ureq::Error::Status`)."
+- Aligns with public API contract and all behavioral tests
+
+### Dependency Setup (Prerequisite)
+
+**Issue:** New exercises reference `serde_json.workspace = true` and `tokio.workspace = true` but workspace.dependencies lacked these.
+
+**Resolution:**
+- Added `serde_json = "1.0"` and `tokio = { version = "1.48.0", features = ["full"] }` to `[workspace.dependencies]` in root `Cargo.toml`
+- Updated `Cargo.lock` accordingly
+- Updated `xtask/tests/exercise_markers.rs` test count from 15 → 34 to reflect new exercises (mechanical fix required for verification)
+
+### Validation Evidence
+
+| Check | Result | Detail |
+|-------|--------|--------|
+| Rustfmt check (19 packages) | ✅ Pass | Zero diffs per-package check |
+| Compile `--no-run` (19 targets) | ✅ Pass | All 19 ex[16-22, 23-28, 29-34] compile |
+| `cargo test --package xtask` | ✅ Pass | 23 unit + 1 marker integration test |
+| README consistency | ✅ Pass | Edge case matches tests & Behavioral Rule 5 |
+| Authorized files only | ✅ Confirmed | Only exercises/world-0[456]/ + workspace dependencies + test count |
+
+### Authorship & Scope
+
+| File | Author | Status |
+|------|--------|--------|
+| 19× `exercises/world-0[456]-*/tests/solve.rs` (formatted) | Brand (original) → Data (revision) | ✅ Revised |
+| `exercises/world-04-deep-signal/ex16-beacon-ping/README.md` edge case | Mouth (original) → Data (revision) | ✅ Revised |
+| `Cargo.toml`, `Cargo.lock`, `xtask/tests/exercise_markers.rs` | Data (mechanical setup) | ✅ Approved |
+
+### Strict Lockout Observed
+
+- ✅ Brand locked out of test file revision (Brand authored originals; Data independently formatted)
+- ✅ Mouth locked out of README revision (Mouth authored original; Data independently fixed edge case)
+- ✅ No edits to ex27/ex29 `src/lib.rs` production source (Mouth owns separate revision)
+- ✅ No concurrent `.squad/` mutations during lockout
+
+### 2026-07-21T16:44:30-07:00: Recovered xtask campaign validation/regression coverage for expanded campaign
+- Replaced fixed `3 worlds / 5 per world / 15 total` checks in `xtask/src/lib.rs` with structural rules: campaign must have >=1 world, each world must have >=1 exercise; preserved existing schema/rank/id/package/prereq/unlock/path/self-reference validation.
+- Restored regression tests in `xtask/src/lib.rs` unit module:
+  - `campaign_validation_accepts_variable_world_sizes`
+  - `campaign_validation_rejects_zero_worlds`
+  - `campaign_validation_rejects_empty_world`
+  - `production_campaign_has_expected_expanded_shape` (6 worlds, 5/5/5/7/6/6, 34 exercises, 9 ranks)
+  - `production_next_after_first_fifteen_is_ex16_beacon_ping`
+- Validation run: `cargo fmt -p xtask`; `cargo test --package xtask` (12 unit + 22 cli integration + 1 marker integration = 35 passing); isolated production CLI check confirmed status reports 6 world lines totaling 34 exercises and `learn next` returns `ex16-beacon-ping` after ex01–ex15 completion.
+
+
+---
+
+## 2026-07-21T16:53:59.008-07:00 | Session Finalization Contribution
+
+**Role:** Rust Engineer
+
+**Final Contributions:**
+- All xtask revisions (rustfmt fixes to test files)
+- All ex16 README revisions (contradiction fix)
+- Structural xtask validation generalization (6W/34E support)
+- Recovery: Restored xtask/src/lib.rs tests after persistence race
+- 5 regression tests for campaign shape
+
+**Lockout Status:** Cleared ✅
+
+**Gates Owned:** All ✅ pass
