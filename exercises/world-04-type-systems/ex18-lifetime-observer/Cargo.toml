@@ -1,0 +1,6 @@
+[package]
+name = "ex18-lifetime-observer"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true

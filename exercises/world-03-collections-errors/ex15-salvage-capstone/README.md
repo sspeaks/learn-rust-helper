@@ -122,7 +122,7 @@ Complete **Config Loader** (ex14).
 - **Ownership:** Moves, borrows, mutable references, lifetimes.
 - **Collections & Errors:** Vectors, maps, Option, Result, custom errors.
 
-Continue to **World 4: Deep Signal**, where you'll build HTTP clients, parse JSON, and write concurrent async code.
+Continue to **World 4: Type Systems**, where you'll extend method design and learn reusable generics and lifetimes before async networking.
 
 ---
 

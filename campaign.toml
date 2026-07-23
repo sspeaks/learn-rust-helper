@@ -206,193 +206,226 @@ title = "Salvage Capstone"
 skill = "All concepts combined"
 xp = 300
 prerequisites = ["ex14-config-loader"]
-unlocks = ["ex16-beacon-ping"]
+unlocks = ["ex16-telemetry-methods"]
 
 [[worlds]]
-id = "world-04-deep-signal"
+id = "world-04-type-systems"
+name = "Type Systems"
+theme = "Methods, Generics, and Lifetimes"
+unlock_text = "Level up from basic impl blocks to reusable generic APIs and explicit lifetime relationships before entering async and concurrency."
+
+[[worlds.exercises]]
+id = "ex16-telemetry-methods"
+package = "ex16-telemetry-methods"
+title = "Telemetry Methods"
+skill = "Advanced method receivers and state transitions"
+xp = 260
+prerequisites = ["ex15-salvage-capstone"]
+unlocks = ["ex17-generic-samples"]
+
+[[worlds.exercises]]
+id = "ex17-generic-samples"
+package = "ex17-generic-samples"
+title = "Generic Samples"
+skill = "Generic functions and practical trait bounds"
+xp = 280
+prerequisites = ["ex16-telemetry-methods"]
+unlocks = ["ex18-lifetime-observer"]
+
+[[worlds.exercises]]
+id = "ex18-lifetime-observer"
+package = "ex18-lifetime-observer"
+title = "Lifetime Observer"
+skill = "Explicit lifetime relationships and borrowing structs"
+xp = 300
+prerequisites = ["ex17-generic-samples"]
+unlocks = ["ex19-beacon-ping"]
+
+[[worlds]]
+id = "world-05-deep-signal"
 name = "Deep Signal"
 theme = "Networking and Async"
 unlock_text = "Connect to remote services, parse structured payloads, and cross the bridge to async Rust—then aggregate a full fleet health report in one concurrent pipeline."
 
 [[worlds.exercises]]
-id = "ex16-beacon-ping"
-package = "ex16-beacon-ping"
+id = "ex19-beacon-ping"
+package = "ex19-beacon-ping"
 title = "Beacon Ping"
 skill = "Synchronous HTTP and error mapping"
 xp = 320
-prerequisites = ["ex15-salvage-capstone"]
-unlocks = ["ex17-packet-decode"]
+prerequisites = ["ex18-lifetime-observer"]
+unlocks = ["ex20-packet-decode"]
 
 [[worlds.exercises]]
-id = "ex17-packet-decode"
-package = "ex17-packet-decode"
+id = "ex20-packet-decode"
+package = "ex20-packet-decode"
 title = "Packet Decode"
 skill = "JSON deserialization and batch validation"
 xp = 350
-prerequisites = ["ex16-beacon-ping"]
-unlocks = ["ex18-signal-timeout"]
+prerequisites = ["ex19-beacon-ping"]
+unlocks = ["ex21-signal-timeout"]
 
 [[worlds.exercises]]
-id = "ex18-signal-timeout"
-package = "ex18-signal-timeout"
+id = "ex21-signal-timeout"
+package = "ex21-signal-timeout"
 title = "Signal Timeout"
 skill = "Timeout-aware HTTP and layered error handling"
 xp = 370
-prerequisites = ["ex17-packet-decode"]
-unlocks = ["ex19-relay-dispatch"]
+prerequisites = ["ex20-packet-decode"]
+unlocks = ["ex22-relay-dispatch"]
 
 [[worlds.exercises]]
-id = "ex19-relay-dispatch"
-package = "ex19-relay-dispatch"
+id = "ex22-relay-dispatch"
+package = "ex22-relay-dispatch"
 title = "Relay Dispatch"
 skill = "HTTP POST with JSON serialization"
 xp = 390
-prerequisites = ["ex18-signal-timeout"]
-unlocks = ["ex20-async-handshake"]
+prerequisites = ["ex21-signal-timeout"]
+unlocks = ["ex23-async-handshake"]
 
 [[worlds.exercises]]
-id = "ex20-async-handshake"
-package = "ex20-async-handshake"
+id = "ex23-async-handshake"
+package = "ex23-async-handshake"
 title = "Async Handshake"
 skill = "async fn and .await with reqwest"
 xp = 420
-prerequisites = ["ex19-relay-dispatch"]
-unlocks = ["ex21-channel-broadcast"]
+prerequisites = ["ex22-relay-dispatch"]
+unlocks = ["ex24-channel-broadcast"]
 
 [[worlds.exercises]]
-id = "ex21-channel-broadcast"
-package = "ex21-channel-broadcast"
+id = "ex24-channel-broadcast"
+package = "ex24-channel-broadcast"
 title = "Channel Broadcast"
 skill = "Concurrent async requests with join"
 xp = 450
-prerequisites = ["ex20-async-handshake"]
-unlocks = ["ex22-deep-signal-capstone"]
+prerequisites = ["ex23-async-handshake"]
+unlocks = ["ex25-deep-signal-capstone"]
 
 [[worlds.exercises]]
-id = "ex22-deep-signal-capstone"
-package = "ex22-deep-signal-capstone"
+id = "ex25-deep-signal-capstone"
+package = "ex25-deep-signal-capstone"
 title = "Deep Signal Capstone"
 skill = "Async pipeline and concurrent aggregation"
 xp = 500
-prerequisites = ["ex21-channel-broadcast"]
-unlocks = ["ex23-crew-dispatch"]
+prerequisites = ["ex24-channel-broadcast"]
+unlocks = ["ex26-crew-dispatch"]
 
 [[worlds]]
-id = "world-05-parallel-ops"
+id = "world-06-parallel-ops"
 name = "Parallel Ops"
 theme = "Concurrency"
 unlock_text = "Harness threads, message channels, and shared-state locks to build safe, parallel programs—then combine them all in a deterministic multi-stage pipeline."
 
 [[worlds.exercises]]
-id = "ex23-crew-dispatch"
-package = "ex23-crew-dispatch"
+id = "ex26-crew-dispatch"
+package = "ex26-crew-dispatch"
 title = "Crew Dispatch"
 skill = "OS threads and JoinHandle"
 xp = 350
-prerequisites = ["ex22-deep-signal-capstone"]
-unlocks = ["ex24-cargo-channel"]
+prerequisites = ["ex25-deep-signal-capstone"]
+unlocks = ["ex27-cargo-channel"]
 
 [[worlds.exercises]]
-id = "ex24-cargo-channel"
-package = "ex24-cargo-channel"
+id = "ex27-cargo-channel"
+package = "ex27-cargo-channel"
 title = "Cargo Channel"
 skill = "MPSC channels and message passing"
 xp = 380
-prerequisites = ["ex23-crew-dispatch"]
-unlocks = ["ex25-mutex-lockdown"]
+prerequisites = ["ex26-crew-dispatch"]
+unlocks = ["ex28-mutex-lockdown"]
 
 [[worlds.exercises]]
-id = "ex25-mutex-lockdown"
-package = "ex25-mutex-lockdown"
+id = "ex28-mutex-lockdown"
+package = "ex28-mutex-lockdown"
 title = "Mutex Lockdown"
 skill = "Arc<Mutex<T>> for shared mutable state"
 xp = 410
-prerequisites = ["ex24-cargo-channel"]
-unlocks = ["ex26-sensor-array"]
+prerequisites = ["ex27-cargo-channel"]
+unlocks = ["ex29-sensor-array"]
 
 [[worlds.exercises]]
-id = "ex26-sensor-array"
-package = "ex26-sensor-array"
+id = "ex29-sensor-array"
+package = "ex29-sensor-array"
 title = "Sensor Array"
 skill = "Data parallelism with rayon"
 xp = 440
-prerequisites = ["ex25-mutex-lockdown"]
-unlocks = ["ex27-rwlock-protocol"]
+prerequisites = ["ex28-mutex-lockdown"]
+unlocks = ["ex30-rwlock-protocol"]
 
 [[worlds.exercises]]
-id = "ex27-rwlock-protocol"
-package = "ex27-rwlock-protocol"
+id = "ex30-rwlock-protocol"
+package = "ex30-rwlock-protocol"
 title = "RwLock Protocol"
 skill = "Arc<RwLock<T>> for concurrent read access"
 xp = 460
-prerequisites = ["ex26-sensor-array"]
-unlocks = ["ex28-parallel-ops-capstone"]
+prerequisites = ["ex29-sensor-array"]
+unlocks = ["ex31-parallel-ops-capstone"]
 
 [[worlds.exercises]]
-id = "ex28-parallel-ops-capstone"
-package = "ex28-parallel-ops-capstone"
+id = "ex31-parallel-ops-capstone"
+package = "ex31-parallel-ops-capstone"
 title = "Parallel Ops Capstone"
 skill = "Threads, channels, and locks combined"
 xp = 520
-prerequisites = ["ex27-rwlock-protocol"]
-unlocks = ["ex29-schema-bootstrap"]
+prerequisites = ["ex30-rwlock-protocol"]
+unlocks = ["ex32-schema-bootstrap"]
 
 [[worlds]]
-id = "world-06-archive-core"
+id = "world-07-archive-core"
 name = "Archive Core"
 theme = "Data Persistence"
 unlock_text = "Bootstrap a SQLite archive, write and query crew records, manage transactions, evolve your schema, and cap it all with a cross-world async-to-sync persistence pipeline."
 
 [[worlds.exercises]]
-id = "ex29-schema-bootstrap"
-package = "ex29-schema-bootstrap"
+id = "ex32-schema-bootstrap"
+package = "ex32-schema-bootstrap"
 title = "Schema Bootstrap"
 skill = "SQLite schema initialization with rusqlite"
 xp = 380
-prerequisites = ["ex28-parallel-ops-capstone"]
-unlocks = ["ex30-crew-manifest"]
+prerequisites = ["ex31-parallel-ops-capstone"]
+unlocks = ["ex33-crew-manifest"]
 
 [[worlds.exercises]]
-id = "ex30-crew-manifest"
-package = "ex30-crew-manifest"
+id = "ex33-crew-manifest"
+package = "ex33-crew-manifest"
 title = "Crew Manifest"
 skill = "Parameterized INSERT and SELECT"
 xp = 410
-prerequisites = ["ex29-schema-bootstrap"]
-unlocks = ["ex31-mission-ledger"]
+prerequisites = ["ex32-schema-bootstrap"]
+unlocks = ["ex34-mission-ledger"]
 
 [[worlds.exercises]]
-id = "ex31-mission-ledger"
-package = "ex31-mission-ledger"
+id = "ex34-mission-ledger"
+package = "ex34-mission-ledger"
 title = "Mission Ledger"
 skill = "Database transactions and rollback"
 xp = 440
-prerequisites = ["ex30-crew-manifest"]
-unlocks = ["ex32-archive-query"]
+prerequisites = ["ex33-crew-manifest"]
+unlocks = ["ex35-archive-query"]
 
 [[worlds.exercises]]
-id = "ex32-archive-query"
-package = "ex32-archive-query"
+id = "ex35-archive-query"
+package = "ex35-archive-query"
 title = "Archive Query"
 skill = "Dynamic filtered queries"
 xp = 470
-prerequisites = ["ex31-mission-ledger"]
-unlocks = ["ex33-data-migration"]
+prerequisites = ["ex34-mission-ledger"]
+unlocks = ["ex36-data-migration"]
 
 [[worlds.exercises]]
-id = "ex33-data-migration"
-package = "ex33-data-migration"
+id = "ex36-data-migration"
+package = "ex36-data-migration"
 title = "Data Migration"
 skill = "Schema migrations and versioning"
 xp = 490
-prerequisites = ["ex32-archive-query"]
-unlocks = ["ex34-archive-capstone"]
+prerequisites = ["ex35-archive-query"]
+unlocks = ["ex37-archive-capstone"]
 
 [[worlds.exercises]]
-id = "ex34-archive-capstone"
-package = "ex34-archive-capstone"
+id = "ex37-archive-capstone"
+package = "ex37-archive-capstone"
 title = "Archive Capstone"
 skill = "Async HTTP and synchronous SQLite pipeline"
 xp = 560
-prerequisites = ["ex33-data-migration"]
+prerequisites = ["ex36-data-migration"]
 unlocks = []

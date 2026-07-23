@@ -353,7 +353,19 @@ name = "ex15-salvage-capstone"
 version = "0.1.0"
 
 [[package]]
-name = "ex16-beacon-ping"
+name = "ex16-telemetry-methods"
+version = "0.1.0"
+
+[[package]]
+name = "ex17-generic-samples"
+version = "0.1.0"
+
+[[package]]
+name = "ex18-lifetime-observer"
+version = "0.1.0"
+
+[[package]]
+name = "ex19-beacon-ping"
 version = "0.1.0"
 dependencies = [
  "ureq",
@@ -361,7 +373,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ex17-packet-decode"
+name = "ex20-packet-decode"
 version = "0.1.0"
 dependencies = [
  "serde",
@@ -369,17 +381,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ex18-signal-timeout"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
- "ureq",
- "wiremock",
-]
-
-[[package]]
-name = "ex19-relay-dispatch"
+name = "ex21-signal-timeout"
 version = "0.1.0"
 dependencies = [
  "serde",
@@ -389,7 +391,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "ex20-async-handshake"
+name = "ex22-relay-dispatch"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "ureq",
+ "wiremock",
+]
+
+[[package]]
+name = "ex23-async-handshake"
 version = "0.1.0"
 dependencies = [
  "reqwest",
@@ -399,7 +411,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ex21-channel-broadcast"
+name = "ex24-channel-broadcast"
 version = "0.1.0"
 dependencies = [
  "reqwest",
@@ -409,7 +421,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ex22-deep-signal-capstone"
+name = "ex25-deep-signal-capstone"
 version = "0.1.0"
 dependencies = [
  "reqwest",
@@ -420,69 +432,69 @@ dependencies = [
 ]
 
 [[package]]
-name = "ex23-crew-dispatch"
+name = "ex26-crew-dispatch"
 version = "0.1.0"
 
 [[package]]
-name = "ex24-cargo-channel"
+name = "ex27-cargo-channel"
 version = "0.1.0"
 
 [[package]]
-name = "ex25-mutex-lockdown"
+name = "ex28-mutex-lockdown"
 version = "0.1.0"
 
 [[package]]
-name = "ex26-sensor-array"
+name = "ex29-sensor-array"
 version = "0.1.0"
 dependencies = [
  "rayon",
 ]
 
 [[package]]
-name = "ex27-rwlock-protocol"
+name = "ex30-rwlock-protocol"
 version = "0.1.0"
 
 [[package]]
-name = "ex28-parallel-ops-capstone"
+name = "ex31-parallel-ops-capstone"
 version = "0.1.0"
 
 [[package]]
-name = "ex29-schema-bootstrap"
-version = "0.1.0"
-dependencies = [
- "rusqlite",
-]
-
-[[package]]
-name = "ex30-crew-manifest"
+name = "ex32-schema-bootstrap"
 version = "0.1.0"
 dependencies = [
  "rusqlite",
 ]
 
 [[package]]
-name = "ex31-mission-ledger"
+name = "ex33-crew-manifest"
 version = "0.1.0"
 dependencies = [
  "rusqlite",
 ]
 
 [[package]]
-name = "ex32-archive-query"
+name = "ex34-mission-ledger"
 version = "0.1.0"
 dependencies = [
  "rusqlite",
 ]
 
 [[package]]
-name = "ex33-data-migration"
+name = "ex35-archive-query"
 version = "0.1.0"
 dependencies = [
  "rusqlite",
 ]
 
 [[package]]
-name = "ex34-archive-capstone"
+name = "ex36-data-migration"
+version = "0.1.0"
+dependencies = [
+ "rusqlite",
+]
+
+[[package]]
+name = "ex37-archive-capstone"
 version = "0.1.0"
 dependencies = [
  "reqwest",

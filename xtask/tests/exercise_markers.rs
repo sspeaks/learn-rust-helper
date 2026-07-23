@@ -55,15 +55,15 @@ fn has_banner(lines: &[&str], todo_idx: usize) -> bool {
 // ── test ─────────────────────────────────────────────────────────────────────
 
 /// Every `todo!()` in every exercise `src/lib.rs` must be immediately preceded
-/// by the complete three-line YOUR MISSION banner.  Expects exactly 15 files;
+/// by the complete three-line YOUR MISSION banner.  Expects exactly 37 files;
 /// the number of remaining `todo!()` stubs may be zero as learners make progress.
 #[test]
 fn every_exercise_has_mission_banner_for_each_todo() {
     let files = collect_exercise_lib_rs();
     assert_eq!(
         files.len(),
-        34,
-        "expected exactly 34 exercise src/lib.rs files; found {}",
+        37,
+        "expected exactly 37 exercise src/lib.rs files; found {}",
         files.len()
     );
 

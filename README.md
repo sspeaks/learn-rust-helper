@@ -1,6 +1,6 @@
 # learn-rust — A Gamified Rust Learning Campaign
 
-Welcome to **learn-rust**, a progression-based campaign that teaches Rust through 34 increasingly complex exercises. You'll build real, working programs by completing stubs—not a tutorial, not a textbook, but a series of quests where you write the code that matters.
+Welcome to **learn-rust**, a progression-based campaign that teaches Rust through 37 increasingly complex exercises. You'll build real, working programs by completing stubs—not a tutorial, not a textbook, but a series of quests where you write the code that matters.
 
 ## Setup & Quick Start
 
@@ -151,45 +151,55 @@ Build with real data structures: vectors, hash maps, Option, Result, and custom 
 | 14 | Config Loader | Result & custom errors | 240 |
 | 15 | Salvage Capstone | All concepts combined | 300 |
 
-### World 4: Deep Signal (7 exercises, 2,800 XP)
+### World 4: Type Systems (3 exercises, 840 XP)
 
-Connect to remote services with synchronous and async HTTP clients, parse structured JSON payloads, and build a concurrent health-reporting pipeline. Worlds 4–6 require external crates (`ureq`, `reqwest`, `serde`, `tokio`, `rayon`, `rusqlite`) managed automatically by Cargo and provided by the Nix dev shell—no additional setup needed.
+Bridge from basic ownership to reusable APIs. You will deepen method design, write generic code with practical trait bounds, and make lifetime relationships explicit before entering async systems work.
 
 | # | Quest | Concept | XP |
 |---|-------|---------|-----|
-| 16 | Beacon Ping | Synchronous HTTP & error mapping | 320 |
-| 17 | Packet Decode | JSON deserialization & batch validation | 350 |
-| 18 | Signal Timeout | Timeout-aware HTTP & layered errors | 370 |
-| 19 | Relay Dispatch | HTTP POST with JSON serialization | 390 |
-| 20 | Async Handshake | async fn and .await with reqwest | 420 |
-| 21 | Channel Broadcast | Concurrent async requests with join | 450 |
-| 22 | Deep Signal Capstone | Async pipeline & concurrent aggregation | 500 |
+| 16 | Telemetry Methods | Advanced method receivers & state transitions | 260 |
+| 17 | Generic Samples | Generic functions & trait bounds | 280 |
+| 18 | Lifetime Observer | Explicit lifetimes & borrowing structs | 300 |
 
-### World 5: Parallel Ops (6 exercises, 2,560 XP)
+### World 5: Deep Signal (7 exercises, 2,800 XP)
+
+Connect to remote services with synchronous and async HTTP clients, parse structured JSON payloads, and build a concurrent health-reporting pipeline. Worlds 5–7 require external crates (`ureq`, `reqwest`, `serde`, `tokio`, `rayon`, `rusqlite`) managed automatically by Cargo and provided by the Nix dev shell—no additional setup needed.
+
+| # | Quest | Concept | XP |
+|---|-------|---------|-----|
+| 19 | Beacon Ping | Synchronous HTTP & error mapping | 320 |
+| 20 | Packet Decode | JSON deserialization & batch validation | 350 |
+| 21 | Signal Timeout | Timeout-aware HTTP & layered errors | 370 |
+| 22 | Relay Dispatch | HTTP POST with JSON serialization | 390 |
+| 23 | Async Handshake | async fn and .await with reqwest | 420 |
+| 24 | Channel Broadcast | Concurrent async requests with join | 450 |
+| 25 | Deep Signal Capstone | Async pipeline & concurrent aggregation | 500 |
+
+### World 6: Parallel Ops (6 exercises, 2,560 XP)
 
 Harness OS threads, message channels, shared-state locks, and data-parallelism to build safe, concurrent programs—and combine everything in a multi-stage deterministic pipeline.
 
 | # | Quest | Concept | XP |
 |---|-------|---------|-----|
-| 23 | Crew Dispatch | OS threads & JoinHandle | 350 |
-| 24 | Cargo Channel | MPSC channels & message passing | 380 |
-| 25 | Mutex Lockdown | Arc\<Mutex\<T\>\> for shared mutable state | 410 |
-| 26 | Sensor Array | Data parallelism with rayon | 440 |
-| 27 | RwLock Protocol | Arc\<RwLock\<T\>\> for concurrent read access | 460 |
-| 28 | Parallel Ops Capstone | Threads, channels, and locks combined | 520 |
+| 26 | Crew Dispatch | OS threads & JoinHandle | 350 |
+| 27 | Cargo Channel | MPSC channels & message passing | 380 |
+| 28 | Mutex Lockdown | Arc\<Mutex\<T\>\> for shared mutable state | 410 |
+| 29 | Sensor Array | Data parallelism with rayon | 440 |
+| 30 | RwLock Protocol | Arc\<RwLock\<T\>\> for concurrent read access | 460 |
+| 31 | Parallel Ops Capstone | Threads, channels, and locks combined | 520 |
 
-### World 6: Archive Core (6 exercises, 2,750 XP)
+### World 7: Archive Core (6 exercises, 2,750 XP)
 
 Bootstrap a SQLite archive, write and query crew records, enforce transactional integrity, evolve your schema with migrations, and cap the campaign with a cross-world async-to-sync persistence pipeline.
 
 | # | Quest | Concept | XP |
 |---|-------|---------|-----|
-| 29 | Schema Bootstrap | SQLite schema initialization with rusqlite | 380 |
-| 30 | Crew Manifest | Parameterized INSERT and SELECT | 410 |
-| 31 | Mission Ledger | Database transactions and rollback | 440 |
-| 32 | Archive Query | Dynamic filtered queries | 470 |
-| 33 | Data Migration | Schema migrations and versioning | 490 |
-| 34 | Archive Capstone | Async HTTP and synchronous SQLite pipeline | 560 |
+| 32 | Schema Bootstrap | SQLite schema initialization with rusqlite | 380 |
+| 33 | Crew Manifest | Parameterized INSERT and SELECT | 410 |
+| 34 | Mission Ledger | Database transactions and rollback | 440 |
+| 35 | Archive Query | Dynamic filtered queries | 470 |
+| 36 | Data Migration | Schema migrations and versioning | 490 |
+| 37 | Archive Capstone | Async HTTP and synchronous SQLite pipeline | 560 |
 
 ## How It Works
 
@@ -344,9 +354,10 @@ learn-rust/
 │   │   └── ... (4 more exercises)
 │   ├── world-02-ownership/       # (5 exercises)
 │   ├── world-03-collections-errors/  # (5 exercises)
-│   ├── world-04-deep-signal/     # (7 exercises — HTTP, async, JSON)
-│   ├── world-05-parallel-ops/    # (6 exercises — threads, channels, locks)
-│   └── world-06-archive-core/    # (6 exercises — SQLite, migrations)
+│   ├── world-04-type-systems/    # (3 exercises — methods, generics, lifetimes)
+│   ├── world-05-deep-signal/     # (7 exercises — HTTP, async, JSON)
+│   ├── world-06-parallel-ops/    # (6 exercises — threads, channels, locks)
+│   └── world-07-archive-core/    # (6 exercises — SQLite, migrations)
 └── .learn-rust/
     └── progress.toml             # Your local progress (gitignored)
 ```
@@ -412,4 +423,4 @@ Happy coding. You've got this. 🦀
 
 **Last updated:** 2026-07-21  
 **Campaign schema:** v1  
-**Total exercises:** 34 | **Total XP available:** 10,730 | **Sovereign threshold:** 10,000
+**Total exercises:** 37 | **Total XP available:** 11,570 | **Sovereign threshold:** 10,000

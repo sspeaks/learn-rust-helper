@@ -1167,21 +1167,21 @@ mod tests {
             .expect("xtask crate should have workspace parent");
         let campaign = load_campaign(root).expect("production campaign should load");
 
-        assert_eq!(campaign.worlds.len(), 6);
+        assert_eq!(campaign.worlds.len(), 7);
         assert_eq!(
             campaign
                 .worlds
                 .iter()
                 .map(|world| world.exercises.len())
                 .collect::<Vec<_>>(),
-            vec![5, 5, 5, 7, 6, 6]
+            vec![5, 5, 5, 3, 7, 6, 6]
         );
-        assert_eq!(campaign.exercises_in_order().len(), 34);
+        assert_eq!(campaign.exercises_in_order().len(), 37);
         assert_eq!(campaign.ranks.len(), 9);
     }
 
     #[test]
-    fn production_next_after_first_fifteen_is_ex16_beacon_ping() {
+    fn production_next_after_first_fifteen_is_ex16_telemetry_methods() {
         let root = Path::new(env!("CARGO_MANIFEST_DIR"))
             .parent()
             .expect("xtask crate should have workspace parent");
@@ -1194,7 +1194,7 @@ mod tests {
             .collect();
 
         let next = choose_next_exercise(&campaign, &completed).expect("next exercise expected");
-        assert_eq!(next.exercise.id, "ex16-beacon-ping");
+        assert_eq!(next.exercise.id, "ex16-telemetry-methods");
     }
 
     #[test]

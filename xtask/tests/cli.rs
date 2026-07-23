@@ -422,7 +422,7 @@ completed = ["ex01-alpha"]
 // ── 23. production_campaign_status_succeeds ──────────────────────────────────
 
 /// Regression guard: the binary compiled from current source must accept the
-/// production 6-world/34-exercise campaign without any hard-coded world-count or
+/// production 7-world/37-exercise campaign without any hard-coded world-count or
 /// exercise-count invariant (the stale Nix binary enforced "exactly 3 worlds" and
 /// "exactly 15 exercises", which broke `learn check` after the campaign was expanded).
 #[test]
@@ -439,7 +439,7 @@ fn production_campaign_status_succeeds() {
 
     assert!(
         out.status.success(),
-        "learn status must succeed against the production 6-world campaign:\n{}",
+        "learn status must succeed against the production 7-world campaign:\n{}",
         String::from_utf8_lossy(&out.stderr)
     );
 
