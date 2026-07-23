@@ -37,13 +37,21 @@ pub fn migrate_schema(
 
 ### `migrate_schema`
 1. Read `current_schema_version`.
-2. If `target_version` is less than the current version, return `DataMigrationError::UnsupportedVersion(target_version)` (downward migration is not supported).
+2. If `target_version` is negative, less than the current version, **or greater than the maximum supported version (2)**, return `DataMigrationError::UnsupportedVersion(target_version)`.
 3. If `target_version` equals the current version, return `Ok(vec![])` (already at target).
 4. For each step from `current_version + 1` to `target_version` (inclusive):
    - Apply the migration: execute the appropriate SQL `ALTER TABLE` statement.
-   - Record the step as a `MigrationStep { from_version, to_version, description }`.
    - Update the schema version to `to_version` using `PRAGMA user_version`.
-5. Return `Ok(Vec<MigrationStep>)` listing all applied steps.
+   - Record the step as a `MigrationStep { from_version, to_version, description }`.
+5. All steps must succeed or none are committed — do not leave the database at an intermediate version on failure.
+6. Return `Ok(Vec<MigrationStep>)` listing all applied steps in order.
+
+### Supported migrations
+
+| Step | from → to | SQL applied | Description |
+|------|-----------|-------------|-------------|
+| 1 | 0 → 1 | `CREATE TABLE IF NOT EXISTS archive_records (id INTEGER PRIMARY KEY AUTOINCREMENT, mission_code TEXT NOT NULL, priority INTEGER NOT NULL);` | create archive_records base table |
+| 2 | 1 → 2 | `ALTER TABLE archive_records ADD COLUMN archived INTEGER NOT NULL DEFAULT 0;` | add archived flag to archive_records |
 
 ## Concepts Practiced
 
@@ -55,7 +63,7 @@ pub fn migrate_schema(
 
 ## Setup Notes
 
-SQLite uses the **bundled** feature. The first build may take 30–45 seconds. Tests use `Connection::open_in_memory()`. The test harness creates a base schema and specific migrations to exercise. Inspect `tests/solve.rs` to understand which version numbers and `ALTER TABLE` statements are expected.
+SQLite uses the **bundled** feature. The first build may take 30–45 seconds. Tests use `Connection::open_in_memory()`. The supported migration versions are listed in the Behavioral Rules section above.
 
 ## Edge Cases
 
@@ -97,7 +105,7 @@ Complete **Archive Query** (ex32).
 ## Success Criteria
 
 - `current_schema_version` reads `PRAGMA user_version` and returns the integer.
-- `migrate_schema` returns `UnsupportedVersion` for target < current.
+- `migrate_schema` returns `UnsupportedVersion` for target < current or target > 2 (maximum supported version).
 - `migrate_schema` returns `Ok(vec![])` for target == current.
 - All steps between current and target are applied in order.
 - Schema version is updated to `target_version` after completion.

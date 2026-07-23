@@ -16,15 +16,18 @@ pub fn calibrate_readings_parallel(
     readings: &[SensorReading],
     offset: i64,
 ) -> Vec<CalibratedReading> {
-    // ══════════════════════════════════════════════════════════════
-    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-    // ══════════════════════════════════════════════════════════════
-    todo!("Use rayon parallel iteration to calibrate each reading")
+    readings
+        .par_iter()
+        .map(|reading| CalibratedReading {
+            sensor_id: reading.sensor_id.clone(),
+            calibrated_value: reading.raw_value + offset,
+        })
+        .collect()
 }
 
 pub fn total_calibrated_power_parallel(readings: &[CalibratedReading]) -> i64 {
-    // ══════════════════════════════════════════════════════════════
-    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-    // ══════════════════════════════════════════════════════════════
-    todo!("Use rayon to sum calibrated values in parallel")
+    readings
+        .par_iter()
+        .map(|reading| reading.calibrated_value)
+        .sum()
 }

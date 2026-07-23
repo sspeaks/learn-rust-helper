@@ -30,11 +30,11 @@ pub fn route_batch(commands: Vec<Command>) -> Vec<String> {
 From `src/lib.rs`, the function must:
 
 1. Accept a `Command` enum value (consumed by ownership).
-2. Match each variant and return a routing message:
-   - **Dock { bay }:** `"Routing to Bay {bay}"`
-   - **Launch { window }:** `"Launch window {window} locked"` or similar
-   - **Broadcast(msg):** `"Broadcasting: {msg}"`
-   - **Abort:** `"Abort signal received"`
+2. Match each variant and return a routing message containing the required content:
+   - **Dock { bay }:** Must include the bay number (e.g., `"Routing to Bay {bay}"`).
+   - **Launch { window }:** Must include the window number (e.g., `"Launch window {window} locked"`).
+   - **Broadcast(msg):** Must include the message payload (e.g., `"Broadcasting: {msg}"`).
+   - **Abort:** Must signal an abort condition (e.g., `"Abort signal received"`).
 3. Return an owned `String` with the message.
 
 ## Concepts Practiced
@@ -83,9 +83,8 @@ Complete **Station Crew** (ex09).
 ## Success Criteria
 
 - All four command variants are handled.
-- Routing messages match the spec exactly.
+- Each routing message contains the required semantic content (bay number, window number, payload, or abort signal).
 - Pattern matching is exhaustive (compiler enforces it).
-- Messages contain the associated data (bay, window, message).
 
 ## Next Steps
 

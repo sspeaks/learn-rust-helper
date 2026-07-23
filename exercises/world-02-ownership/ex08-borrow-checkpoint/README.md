@@ -27,8 +27,8 @@ From `src/lib.rs`, the function must:
 1. Accept a mutable slice of turrets and an emergency boost value.
 2. For each turret:
    - Add the emergency boost to its charge.
-   - If charge exceeds 100, cap it at 100 and set overheated to true.
-   - If charge is 100 or less, set overheated to false.
+   - If the new charge exceeds 100: set `charge = 100` and set `overheated = true`.
+   - If the new charge is 100 or less: set `overheated = false` (clear any prior overheat flag).
 3. Modify turrets in-place; no return value.
 
 ## Concepts Practiced
@@ -41,9 +41,8 @@ From `src/lib.rs`, the function must:
 ## Edge Cases
 
 - Emergency boost is 0 (turret may already be overheated).
-- Emergency boost is negative (drains charge).
-- Turret charge goes below 0 (handle the boundary).
-- Multiple turrets with different states.
+- Emergency boost is negative (drains charge; charge may go below zero, which is allowed).
+- Multiple turrets with different initial states.
 
 ## How to Work on This Quest
 

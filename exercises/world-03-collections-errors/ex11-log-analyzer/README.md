@@ -26,7 +26,7 @@ From `src/lib.rs`, the function must:
 
 1. Accept a slice of `LogEvent` and a maximum number of items to return.
 2. Filter to events where `success == false`.
-3. Map each failure to a summary string: `"{system}: error code {code}"`
+3. Map each failure to a summary string that contains both the system name and the numeric error code. (For example: `"{system}: error code {code}"`—the surrounding format is flexible, but both values must be present.)
 4. Return up to `max_items` summaries as a `Vec<String>`.
 5. If fewer failures than `max_items`, return all.
 
@@ -78,7 +78,8 @@ Complete **Command Router** (ex10).
 ## Success Criteria
 
 - Failures are filtered correctly.
-- Summaries are formatted exactly as `"{system}: error code {code}"`.
+- Each summary string contains the system name and numeric error code.
+- Summaries preserve the original input order (stable).
 - At most `max_items` summaries are returned.
 - Uses iterator adapters (no explicit loops required).
 

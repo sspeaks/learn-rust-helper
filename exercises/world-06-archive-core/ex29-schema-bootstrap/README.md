@@ -24,15 +24,23 @@ pub fn ensure_schema_version(
 ## Behavioral Rules
 
 ### `bootstrap_archive_schema`
-1. Create the base archive tables. At minimum, create:
-   - An `archive_records` table with columns: `id INTEGER PRIMARY KEY AUTOINCREMENT`, `mission_code TEXT NOT NULL`, `priority INTEGER NOT NULL`, `archived INTEGER NOT NULL DEFAULT 0`.
-   - Any indexes the tests require (check `tests/solve.rs` for table names and column expectations).
-2. Use `CREATE TABLE IF NOT EXISTS` so the function is idempotent.
+1. Create the archive table and its index using the following DDL:
+   ```sql
+   CREATE TABLE IF NOT EXISTS archive_records (
+       id       INTEGER PRIMARY KEY AUTOINCREMENT,
+       mission_code TEXT NOT NULL,
+       priority INTEGER NOT NULL,
+       archived INTEGER NOT NULL DEFAULT 0
+   );
+   CREATE INDEX IF NOT EXISTS idx_archive_records_mission_code
+       ON archive_records(mission_code);
+   ```
+2. Use `CREATE TABLE IF NOT EXISTS` and `CREATE INDEX IF NOT EXISTS` so the function is idempotent.
 3. Any SQL error wraps in `SchemaBootstrapError::Sql`.
 
 ### `ensure_schema_version`
-1. Persist the `version` in SQLite's built-in `PRAGMA user_version = N` mechanism or in a dedicated `schema_version` table.
-2. Subsequent calls with the same version should be a no-op (idempotent).
+1. Persist the `version` in SQLite's built-in `PRAGMA user_version = N` mechanism.
+2. Calling this function with any version value always sets the stored version to that value — it does not fail if the version is already set (idempotent from an error perspective).
 3. Any SQL error wraps in `SchemaBootstrapError::Sql`.
 
 ## Concepts Practiced
@@ -89,8 +97,7 @@ Complete **Parallel Ops Capstone** (ex28).
 
 - `bootstrap_archive_schema` creates all required tables without error.
 - The function is idempotent: calling it twice does not fail.
-- `ensure_schema_version` persists the version number.
-- Calling `ensure_schema_version` twice with the same version succeeds.
+- `ensure_schema_version` persists the version number without error (calling it multiple times with the same or different versions always succeeds).
 - All SQL errors are wrapped in `SchemaBootstrapError::Sql`.
 
 ## Next Steps

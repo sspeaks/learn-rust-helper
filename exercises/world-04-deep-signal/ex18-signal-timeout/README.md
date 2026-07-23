@@ -34,7 +34,7 @@ pub fn fetch_signal_with_timeout(
 1. **Configure the timeout:** Build a ureq `Agent` with the given `timeout` applied to the request.
 2. **Request URL:** Send a GET to `{base_url}/signal`.
 3. **Map ureq errors:**
-   - A timeout is reported as `ureq::Error::Transport` whose inner `ureq::Transport::kind()` is `ureq::ErrorKind::Io` with an underlying `io::ErrorKind::TimedOut` — return `SignalTimeoutError::TimedOut`.
+   - A transport error whose `kind()` is `ureq::ErrorKind::Io` — return `SignalTimeoutError::TimedOut`.
    - Any non-2xx HTTP status — return `SignalTimeoutError::HttpStatus(status_code)`.
    - Other transport errors — return `SignalTimeoutError::Transport(transport)`.
 4. **Read the body:** Read the raw bytes from the response using `into_reader()` and `Read::read_to_end`. Any I/O failure returns `SignalTimeoutError::ReadBody`. Then strictly decode the bytes to a UTF-8 string with `String::from_utf8`; invalid UTF-8 also returns `SignalTimeoutError::ReadBody`.

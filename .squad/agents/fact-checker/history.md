@@ -17,3 +17,5 @@ Fact Checker verifies Rust and Cargo claims and challenges assumptions about the
 ## Learnings
 
 Initial setup complete.
+
+📌 Team update (2026-07-23T12:34:45.793-07:00): Learner-facing contract completeness — all exercise instructions must fully specify test behavior; learners must never need to read tests to discover requirements. — decided by Seth Speaks

@@ -30,12 +30,12 @@ pub fn load_crew_manifest(conn: &Connection) -> Result<Vec<CrewManifestEntry>, C
 ## Behavioral Rules
 
 ### `insert_crew_member`
-1. Insert one row into the `crew_manifest` table (or whichever table the tests expect—inspect `tests/solve.rs` for the table name).
+1. Insert one row into the `crew_manifest` table.
 2. Bind all three fields (`crew_id`, `role`, `rank`) as parameters. **Never interpolate user values directly into SQL strings** (parameterized queries prevent SQL injection).
 3. Return `Ok(())` on success; wrap any SQL error in `CrewManifestError::Sql`.
 
 ### `load_crew_manifest`
-1. Select all rows from the crew table ordered consistently (e.g., by `crew_id` or insertion order).
+1. Select all rows from the `crew_manifest` table ordered by `crew_id` ascending.
 2. Map each row to a `CrewManifestEntry` struct.
 3. Return `Ok(Vec<CrewManifestEntry>)`.
 4. Wrap any SQL error in `CrewManifestError::Sql`.

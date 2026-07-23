@@ -1137,3 +1137,16 @@ Full output after first solve:
 - No commits or staging performed
 
 **Status:** APPROVED. Campaign complete.
+
+
+---
+
+### 2026-07-23T12:34:45.793-07:00: Learner-facing contract completeness
+
+**By:** Seth Speaks (via Copilot)
+
+**What:** Every exercise's learner-facing instructions must fully specify all behavior required by tests; learners must never need to read tests to discover requirements. Put clarification in the README when appropriate, or another clearly signposted learner-facing location when better.
+
+**Why:** Repeated mismatches—especially URL construction requirements—have made tests the de facto specification and blocked learners unnecessarily.
+
+**Status:** Decided. Applies to all exercise review and documentation cycles going forward.

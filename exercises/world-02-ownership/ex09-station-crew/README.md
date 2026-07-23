@@ -46,6 +46,7 @@ From `src/lib.rs`, the methods must:
 3. **`badge(&self) -> String`:**
    - Return a formatted badge like `"[L05] Nova — Navigator"`.
    - Format: `"[L{:02}] {name} — {role}"` (level zero-padded to 2 digits).
+   - The `—` separator is the **em dash** character (Unicode U+2014), not a plain ASCII hyphen `-`.
 
 ## Concepts Practiced
 
@@ -94,7 +95,7 @@ Complete **Borrow Checkpoint** (ex08).
 
 - `new()` creates a member with the right fields.
 - `promote()` increments level and updates role, capping at 99.
-- `badge()` returns the exact format `"[L##] Name — Role"`.
+- `badge()` returns a badge string in the format `"[L##] Name — Role"` where `—` is the em dash character (U+2014), not a plain hyphen.
 - `impl Into<String>` trait bound works for `&str` and `String`.
 
 ## Next Steps

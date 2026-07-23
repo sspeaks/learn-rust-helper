@@ -37,7 +37,7 @@ pub fn build_salvage_plan(manifest_lines: &[&str], capacity: u32) -> Result<Salv
 
 From `src/lib.rs`, the function must:
 
-1. **Parse manifest lines** in format: `name|mass|priority|fragile` (tab or pipe-delimited).
+1. **Parse manifest lines** in format: `name|mass|priority|fragile` (pipe-delimited, using `|` as the separator).
    - `name`: String (item name)
    - `mass`: u32 (weight in units)
    - `priority`: u8 (0-255)
@@ -116,18 +116,14 @@ Complete **Config Loader** (ex14).
 
 ## What's Next?
 
-**Congratulations!** You've completed the learn-rust campaign. You now understand:
+**Congratulations!** You've completed World 3: Collections & Errors. You now understand:
 
 - **Foundations:** Functions, variables, control flow, strings.
 - **Ownership:** Moves, borrows, mutable references, lifetimes.
 - **Collections & Errors:** Vectors, maps, Option, Result, custom errors.
 
-Next steps:
-- Write your own small Rust project.
-- Read ["The Rust Book"](https://doc.rust-lang.org/book/) to deepen your knowledge.
-- Explore [Exercism](https://exercism.org/tracks/rust) for more practice.
-- Join the [Rust community](https://www.rust-lang.org/what/community) and build something amazing.
+Continue to **World 4: Deep Signal**, where you'll build HTTP clients, parse JSON, and write concurrent async code.
 
 ---
 
-**Total campaign XP:** 2,300 | **Your rank:** Legend ◈
+**World 3 XP:** 1,170 | **Onward to World 4 →**

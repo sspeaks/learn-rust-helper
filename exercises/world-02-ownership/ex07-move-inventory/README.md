@@ -34,7 +34,7 @@ From `src/lib.rs`, the function must:
 - **Ownership transfer:** Moving a value from the vector to the caller.
 - **Mutable borrowing:** `&mut Vec<T>` allows removing elements.
 - **`Option` type:** `Some(T)` vs `None` for optional results.
-- **`Vec::remove()`:** Removing an element by index.
+- **Searching by index:** Using `Vec::iter().position()` to find the element's index, then removing it with `Vec::remove()` (stable order) or `Vec::swap_remove()` (faster, changes order of remaining elements).
 
 ## Edge Cases
 

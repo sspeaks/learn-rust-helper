@@ -41,7 +41,7 @@ From `src/lib.rs`, the function must:
 2. Return an owned `String` in the format: `"#RR | PlayerName | +SSSS"`
    - `RR` is the rank zero-padded to 2 digits (e.g., `01`, `09`, `10`)
    - `PlayerName` is the player name as-is
-   - `SSSS` is the score zero-padded to 4 digits with a leading `+` for positive scores (e.g., `+0042`)
+   - `SSSS` is the score zero-padded to **at least 4 digits** with a leading sign (`+` for non-negative, `-` for negative). For example, `+0042` for 42 or `-0005` for -5. Scores of 10,000 or more will naturally produce wider fields.
 3. Multiple lines are joined with newlines by `render_scoreboard`.
 
 ## Concepts Practiced
@@ -53,6 +53,7 @@ From `src/lib.rs`, the function must:
 ## Edge Cases
 
 - Scores can be negative; display as `-SSSS` (e.g., `-0005`).
+- Score fields expand beyond 4 digits for large values (e.g., `+12345` for 12345).
 - Player names can contain spaces, punctuation, and Unicode.
 - Ranks are 1-indexed (first player is rank 1, not 0).
 

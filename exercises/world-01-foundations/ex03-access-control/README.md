@@ -30,13 +30,13 @@ From `src/lib.rs`, the function must:
 
 1. Accept a `Clearance` enum and a boolean `is_on_duty`.
 2. Return a static string (`&'static str`) with the gate message.
-3. Message logic:
-   - **Visitor, on duty:** "Welcome, Visitor—enjoy your tour."
-   - **Visitor, off duty:** "Visitor pass expired."
-   - **Engineer, on duty:** "Welcome, Engineer. Proceed to Bay A."
-   - **Engineer, off duty:** "Engineer must check in first."
-   - **Captain, on duty:** "Welcome back, Captain. All systems yours."
-   - **Captain, off duty:** "Captain, command duty awaits."
+3. Return a **distinct, non-empty** message for each of the six (clearance, duty) combinations. Exact wording is your choice; the examples below show one valid set:
+   - **Visitor, on duty:** e.g., `"Welcome, Visitor—enjoy your tour."`
+   - **Visitor, off duty:** e.g., `"Visitor pass expired."`
+   - **Engineer, on duty:** e.g., `"Welcome, Engineer. Proceed to Bay A."`
+   - **Engineer, off duty:** e.g., `"Engineer must check in first."`
+   - **Captain, on duty:** e.g., `"Welcome back, Captain. All systems yours."`
+   - **Captain, off duty:** e.g., `"Captain, command duty awaits."`
 
 ## Concepts Practiced
 
@@ -47,11 +47,9 @@ From `src/lib.rs`, the function must:
 
 ## Edge Cases
 
-- All six (Clearance, bool) combinations must return distinct messages.
-- Messages must match exactly (whitespace, punctuation matter).
+- All six (Clearance, bool) combinations must return distinct, non-empty messages.
+- Each on-duty and off-duty message for the same clearance level must differ.
 - Return type is `&'static str`, not `String` (use literals, not `format!()`).
-
-## How to Work on This Quest
 
 **From inside `nix develop path:.`:**
 
@@ -83,7 +81,7 @@ Complete **Reactor Calibration** (ex02).
 
 ## Success Criteria
 
-- All six gate messages match exactly.
+- All six gate messages are distinct and non-empty.
 - Pattern matching covers all combinations.
 - Return type is `&'static str` (string literals).
 

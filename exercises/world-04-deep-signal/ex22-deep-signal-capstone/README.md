@@ -50,7 +50,7 @@ pub async fn run_deep_signal_pipeline(
 
 ### `gather_deep_signals`
 1. If `nodes` is empty, return `DeepSignalError::EmptyNodeList`.
-2. For each node, send a GET request to `{base_url}/nodes/{node}`.
+2. For each node, send a GET request to `{base_url}/deep-signals/{node}`.
 3. Network failures return `DeepSignalError::Request { node: node.to_string(), source }`.
 4. Non-2xx responses return `DeepSignalError::InvalidStatus { node: node.to_string(), status }`.
 5. Decode failures return `DeepSignalError::Decode { node: node.to_string(), source }`.

@@ -58,5 +58,15 @@
     "status": "active",
     "createdAt": "2026-07-22T23:26:41.220Z",
     "updatedAt": "2026-07-22T23:26:41.220Z"
+  },
+  {
+    "id": "c43eb5fc-ed58-49ef-8782-3674cdfd2b21",
+    "class": "DECISION",
+    "loadGuidance": "ALWAYS",
+    "title": "Learner-facing contract completeness",
+    "path": ".squad/decisions/inbox/seth-speaks-learner-facing-contract-completeness-c43eb5fc.md",
+    "status": "active",
+    "createdAt": "2026-07-23T19:36:08.088Z",
+    "updatedAt": "2026-07-23T19:36:08.088Z"
   }
 ]

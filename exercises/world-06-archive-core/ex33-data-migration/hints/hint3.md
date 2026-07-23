@@ -23,11 +23,16 @@ function migrate_schema(conn, target_version):
 
             Apply the migration SQL for this step:
             Match on version:
-                1 → ALTER TABLE archive_records ADD COLUMN <column1> ...
-                2 → ALTER TABLE archive_records ADD COLUMN <column2> ...
-                N → (each step adds what the tests expect)
-            On unknown version:
-                → return DataMigrationError::UnsupportedVersion(version)
+                1 → CREATE TABLE IF NOT EXISTS archive_records (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        mission_code TEXT NOT NULL,
+                        priority INTEGER NOT NULL
+                    )
+                    description: "create archive_records base table"
+                2 → ALTER TABLE archive_records
+                        ADD COLUMN archived INTEGER NOT NULL DEFAULT 0
+                    description: "add archived flag to archive_records"
+                N (> 2 or < 0) → return DataMigrationError::UnsupportedVersion(version)
 
             Update PRAGMA user_version = to_v
 
@@ -36,6 +41,4 @@ function migrate_schema(conn, target_version):
     Step 6: Return Ok(steps)
 ```
 
-**Note:** Check `tests/solve.rs` to see what column names and types each migration step must add. Your `match` arms must align with what the tests verify.
-
-**Spoiler threshold:** High—complete algorithm. Column names are intentionally left to the tests to specify.
+**Note:** `PRAGMA user_version = N` cannot use `?` parameter binding—the value must be embedded in the SQL string using `format!`. Step 2 also applies when the target exceeds the maximum supported migration version (2); reject any target greater than 2 with `UnsupportedVersion`.

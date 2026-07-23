@@ -8,10 +8,12 @@ async function fetch_archive_batch(base_url, mission_code):
     Step 2: Check status — if not 2xx:
             → return ArchiveCapstoneError::InvalidStatus(status)
 
-    Step 3: Decode body as Vec<RemoteArchiveRecord> via .json().await
+    Step 3: Decode body as a JSON object with `fetched_at` (String) and `records`
+            (Vec<RemoteArchiveRecord>) fields via .json::<ArchiveBatchPayload>().await
             → on error, return ArchiveCapstoneError::Decode
 
-    Step 4: Return Ok(ArchiveBatch { fetched_at: <timestamp>, records })
+    Step 4: Return Ok(ArchiveBatch { fetched_at: payload.fetched_at, records: payload.records })
+            (fetched_at is the server-provided timestamp, not a client-generated one)
 
 function persist_archive_batch(conn, batch):
     Step 1: Begin transaction on conn

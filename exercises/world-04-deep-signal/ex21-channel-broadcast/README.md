@@ -58,6 +58,7 @@ pub async fn broadcast_channels(
 - **`futures::future::join_all`** or **`tokio::join!`:** Launching multiple futures simultaneously.
 - **Structured concurrency:** All tasks start before any result is awaited.
 - **Sequential vs. concurrent:** A `.for` loop with `.await` inside processes *one at a time*—use join utilities to run concurrently.
+- **Important:** A sequential `for` loop will produce correct output in existing tests because result ordering masks the timing difference. This is intentional: the *learning objective* is structured concurrency. Implement `broadcast_channels` with `join_all` (or equivalent) so all requests are in-flight simultaneously.
 - **Collecting results:** Turning a `Vec<Result<...>>` into a `Result<Vec<...>>`.
 
 ## Setup Notes

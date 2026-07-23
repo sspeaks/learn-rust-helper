@@ -14,18 +14,30 @@ pub enum RwLockProtocolError {
 }
 
 pub fn shared_protocol_state(initial: BTreeMap<String, u32>) -> Arc<RwLock<BTreeMap<String, u32>>> {
-    // ══════════════════════════════════════════════════════════════
-    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-    // ══════════════════════════════════════════════════════════════
-    todo!("Create shared read-heavy state with Arc<RwLock<_>>")
+    Arc::new(RwLock::new(initial))
 }
 
 pub fn apply_protocol_updates(
     state: Arc<RwLock<BTreeMap<String, u32>>>,
     updates: Vec<ProtocolUpdate>,
 ) -> Result<BTreeMap<String, u32>, RwLockProtocolError> {
-    // ══════════════════════════════════════════════════════════════
-    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-    // ══════════════════════════════════════════════════════════════
-    todo!("Apply updates safely while allowing concurrent read snapshots")
+    for update in updates {
+        let state = Arc::clone(&state);
+        std::thread::scope(|s| {
+            s.spawn(move || {
+                let mut guard = state
+                    .write()
+                    .map_err(|_| RwLockProtocolError::LockPoisoned)?;
+                guard.insert(update.key, update.value);
+                Ok::<(), RwLockProtocolError>(())
+            });
+        });
+    }
+
+    let snapshot = state
+        .read()
+        .map_err(|_| RwLockProtocolError::LockPoisoned)?
+        .clone();
+
+    Ok(snapshot)
 }

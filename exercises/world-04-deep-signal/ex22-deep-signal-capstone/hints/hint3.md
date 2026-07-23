@@ -5,7 +5,7 @@ async function gather_deep_signals(base_url, nodes):
     Step 1: If nodes is empty → return EmptyNodeList
 
     Step 2: Map each node to an un-awaited async fetch:
-            future = GET "{base_url}/nodes/{node}", decode as DeepSignalSample
+            future = GET "{base_url}/deep-signals/{node}", decode as DeepSignalSample
             Map each error to the node-carrying error variant
 
     Step 3: join_all(futures).await → Vec<Result<DeepSignalSample, DeepSignalError>>

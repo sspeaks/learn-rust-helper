@@ -74,3 +74,5 @@ Initial setup complete. The experience should feel like a campaign, with visible
 📌 Team update (2026-07-22T16:27:03Z): Design Review campaign completeness completed. You own action item: Fix ex19 learner docs/hints. Correct endpoint to `/relay/dispatch` (not `/relay`). — Mikey (facilitator)
 
 ✅ Campaign Complete (2026-07-22T16:56:56Z): Ex19 endpoint guidance successfully corrected across README, hint2, and hint3 (`{base_url}/relay/dispatch`). Approved by Brand. Campaign now 34/34. — Mikey (facilitator)
+
+📌 Team update (2026-07-23T12:34:45.793-07:00): Learner-facing contract completeness — all exercise instructions must fully specify test behavior; learners must never need to read tests to discover requirements. — decided by Seth Speaks

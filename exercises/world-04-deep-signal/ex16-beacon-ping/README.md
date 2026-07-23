@@ -27,7 +27,7 @@ pub fn ping_beacon(base_url: &str, beacon_id: &str) -> Result<BeaconPing, Beacon
 
 1. **Construct the URL:** Combine `base_url` and `beacon_id` to form the path `/beacons/{beacon_id}`.
 2. **Send a GET request** using `ureq::get`.
-3. **Read the response body** as a `String`. An I/O failure reading the body maps to `BeaconPingError::ReadBody`.
+3. **Read the response body** as a `String`. An I/O failure reading the body maps to `BeaconPingError::ReadBody`. Invalid UTF-8 in the body also maps to `BeaconPingError::ReadBody`.
 4. **Return `BeaconPing`** with:
    - `endpoint`: the full URL string that was requested
    - `status`: the HTTP response status code

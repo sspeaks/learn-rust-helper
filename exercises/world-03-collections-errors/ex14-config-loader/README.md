@@ -54,7 +54,7 @@ From `src/lib.rs`, the function must:
 - Duplicate key appearing twice.
 - Invalid port (negative, too large, non-numeric).
 - Unknown keys mixed with valid ones.
-- Extra whitespace around key or value.
+- Whitespace around a key is **part of the key** and is not stripped. For example, `" host=..."` is parsed as the key `" host"` (with a leading space), which triggers `UnknownKey(" host")`. Trim your input intentionally if needed.
 
 ## How to Work on This Quest
 

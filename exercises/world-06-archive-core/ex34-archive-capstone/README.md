@@ -63,14 +63,16 @@ pub fn load_archive_preview(
 1. Send a GET request to `{base_url}/archive/{mission_code}`.
 2. A network failure returns `ArchiveCapstoneError::Request`.
 3. A non-2xx status returns `ArchiveCapstoneError::InvalidStatus(status)`.
-4. Decode the JSON body as `Vec<RemoteArchiveRecord>`. A decode failure returns `ArchiveCapstoneError::Decode`.
-5. Return `Ok(ArchiveBatch { fetched_at: <current timestamp string>, records })`.
+4. The server responds with a JSON **object** of the form `{ "fetched_at": "<ISO timestamp>", "records": [...] }`. Decode this object as a whole (not as a bare array). A decode failure returns `ArchiveCapstoneError::Decode`.
+5. Return `Ok(ArchiveBatch { fetched_at, records })` using the `fetched_at` string provided by the server. Do **not** generate a timestamp from the client clock.
 
 ### `persist_archive_batch`
 1. Wrap all inserts in a single transaction for atomicity.
 2. For each record in `batch.records`:
    - Attempt to insert into the archive table.
    - If the record already exists (duplicate `mission_code` + `artifact`), count it as `skipped` rather than failing.
+
+> **Schema precondition:** `persist_archive_batch` requires the archive table to have a `UNIQUE(mission_code, artifact)` constraint so that `INSERT OR IGNORE` can detect duplicates. Ensure this constraint is present when you create the table (see Quest 29).
    - If successfully inserted, count it as `inserted`.
 3. Commit the transaction.
 4. Return `Ok(PersistReport { inserted, skipped })`.
@@ -138,7 +140,7 @@ Complete **Data Migration** (ex33).
 
 ## Success Criteria
 
-- `fetch_archive_batch` makes an async GET and decodes `Vec<RemoteArchiveRecord>`.
+- `fetch_archive_batch` makes an async GET, decodes the JSON object `{ "fetched_at": "...", "records": [...] }`, and returns the server-provided `fetched_at` string unchanged.
 - `persist_archive_batch` is a **synchronous** function (no `async`).
 - Duplicate records are silently skipped and counted.
 - `PersistReport.inserted + PersistReport.skipped` equals `batch.records.len()`.
