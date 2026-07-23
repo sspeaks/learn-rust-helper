@@ -18,14 +18,19 @@ pub async fn perform_async_handshake(
     base_url: &str,
     call_sign: &str,
 ) -> Result<HandshakeReceipt, AsyncHandshakeError> {
-    use AsyncHandshakeError::*;
-    let req_url: String = format!("{}/handshake/{}", base_url.trim_end_matches("/"), call_sign);
-    let r = reqwest::get(req_url).await.map_err(Request)?;
+    let endpoint = format!("{}/handshake/{call_sign}", base_url.trim_end_matches('/'));
 
-    let status = r.status();
-    if !r.status().is_success() {
-        return Err(InvalidStatus(status));
+    let response = reqwest::get(&endpoint)
+        .await
+        .map_err(AsyncHandshakeError::Request)?;
+
+    let status = response.status();
+    if !status.is_success() {
+        return Err(AsyncHandshakeError::InvalidStatus(status));
     }
 
-    r.json::<HandshakeReceipt>().await.map_err(Decode)
+    response
+        .json::<HandshakeReceipt>()
+        .await
+        .map_err(AsyncHandshakeError::Decode)
 }

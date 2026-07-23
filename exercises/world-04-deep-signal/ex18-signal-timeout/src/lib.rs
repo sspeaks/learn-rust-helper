@@ -1,7 +1,9 @@
 use serde::Deserialize;
-use ureq::Error::{Status, Transport};
-use std::{ time::Duration};
-
+use std::{io, time::Duration};
+use ureq::{
+    Error::{Status, Transport},
+    ErrorKind,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct SignalEnvelope {
@@ -23,21 +25,27 @@ pub fn fetch_signal_with_timeout(
     base_url: &str,
     timeout: Duration,
 ) -> Result<SignalEnvelope, SignalTimeoutError> {
-
-     let res =   ureq::get(base_url)
+    let res = ureq::get(format!("{}/signal", base_url.trim_end_matches("/")).as_str())
         .timeout(timeout)
         .call()
-        .map_err(|err| {
-            match err {
-                Status(a,_b) => if a == 408 {
+        .map_err(|err| match err {
+            Status(a, _b) => SignalTimeoutError::HttpStatus(a),
+            Transport(a) => {
+                if a.kind() == ErrorKind::Io {
                     SignalTimeoutError::TimedOut
                 } else {
-                    SignalTimeoutError::HttpStatus(a)
-                },
-                Transport(a) => SignalTimeoutError::Transport(a)
+                    SignalTimeoutError::Transport(a)
+                }
             }
         })?;
-    let json_raw: String = res.into_string().map_err(SignalTimeoutError::ReadBody)?;
-    let json: SignalEnvelope = serde_json::from_str(&json_raw).map_err(SignalTimeoutError::Decode)?;
+    let mut bytes = Vec::new();
+    res.into_reader()
+        .read_to_end(&mut bytes)
+        .map_err(SignalTimeoutError::ReadBody)?;
+    let json_raw = String::from_utf8(bytes).map_err(|error| {
+        SignalTimeoutError::ReadBody(io::Error::new(io::ErrorKind::InvalidData, error))
+    })?;
+    let json: SignalEnvelope =
+        serde_json::from_str(&json_raw).map_err(SignalTimeoutError::Decode)?;
     Ok(json)
 }

@@ -38,5 +38,25 @@
     "status": "active",
     "createdAt": "2026-07-19T21:21:58.004Z",
     "updatedAt": "2026-07-19T21:21:58.004Z"
+  },
+  {
+    "id": "5a759eea-85ed-4884-8247-06784ad0f58b",
+    "class": "DECISION",
+    "loadGuidance": "ALWAYS",
+    "title": "Reference solutions required",
+    "path": ".squad/decisions/inbox/seth-speaks-via-squad-reference-solutions-required-5a759eea.md",
+    "status": "active",
+    "createdAt": "2026-07-22T23:22:35.018Z",
+    "updatedAt": "2026-07-22T23:22:35.018Z"
+  },
+  {
+    "id": "91575539-96a3-4fba-9a06-5524caca532c",
+    "class": "DECISION",
+    "loadGuidance": "ALWAYS",
+    "title": "Solution file contract and validation strategy",
+    "path": ".squad/decisions/inbox/mikey-solution-file-contract-and-validation-strategy-91575539.md",
+    "status": "active",
+    "createdAt": "2026-07-22T23:26:41.220Z",
+    "updatedAt": "2026-07-22T23:26:41.220Z"
   }
 ]

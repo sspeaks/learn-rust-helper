@@ -39,7 +39,7 @@ pub fn dispatch_relay(
 ## Behavioral Rules
 
 1. **Serialize the request:** Convert `request` to a JSON string with `serde_json::to_string`. A serialization failure returns `RelayDispatchError::Serialize`.
-2. **POST to `{base_url}/relay`:** Send the JSON string as the body with content type `application/json`.
+2. **POST to `{base_url}/relay/dispatch`:** Construct the endpoint by appending `/relay/dispatch` to `base_url` (which has no trailing slash). Send the JSON string as the body with content type `application/json`.
 3. **Map request errors:** Any transport or HTTP-level failure from ureq returns `RelayDispatchError::Request`.
 4. **Read the response body:** Call `into_string()` on the response. I/O failure returns `RelayDispatchError::ReadBody`.
 5. **Decode the receipt:** Parse the body string into `RelayDispatchReceipt` with `serde_json`. Failure returns `RelayDispatchError::Decode`.
@@ -96,7 +96,7 @@ Complete **Signal Timeout** (ex18).
 ## Success Criteria
 
 - Request body is serialized as valid JSON before being sent.
-- POST is sent to the correct URL with `Content-Type: application/json`.
+- POST is sent to `{base_url}/relay/dispatch` with `Content-Type: application/json`.
 - Serialization failures return `RelayDispatchError::Serialize`.
 - Transport/HTTP failures return `RelayDispatchError::Request`.
 - Body read failures return `RelayDispatchError::ReadBody`.

@@ -37,7 +37,7 @@ pub fn fetch_signal_with_timeout(
    - A timeout is reported as `ureq::Error::Transport` whose inner `ureq::Transport::kind()` is `ureq::ErrorKind::Io` with an underlying `io::ErrorKind::TimedOut` — return `SignalTimeoutError::TimedOut`.
    - Any non-2xx HTTP status — return `SignalTimeoutError::HttpStatus(status_code)`.
    - Other transport errors — return `SignalTimeoutError::Transport(transport)`.
-4. **Read the body:** Call `into_string()` on the response. An I/O failure returns `SignalTimeoutError::ReadBody`.
+4. **Read the body:** Read the raw bytes from the response using `into_reader()` and `Read::read_to_end`. Any I/O failure returns `SignalTimeoutError::ReadBody`. Then strictly decode the bytes to a UTF-8 string with `String::from_utf8`; invalid UTF-8 also returns `SignalTimeoutError::ReadBody`.
 5. **Decode JSON:** Parse the body string into `SignalEnvelope` using `serde_json`. Failure returns `SignalTimeoutError::Decode`.
 
 ## Concepts Practiced

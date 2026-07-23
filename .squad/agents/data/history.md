@@ -149,3 +149,30 @@ Focus: Ready for integration/merge. Archive: `log/2026-07-20T13-45-24.420-07-00-
 
 
 📌 Team update (2026-07-22T11:53:34.452-07:00): Campaign validation complete. Stale binary fix verified. 6W/34E regression tests added to xtask/tests/cli.rs. Issue #1 solution command decisions merged: D1-D6 design review, test contracts, framing copy spec. Ready for implementation. — Scribe
+
+
+### 2026-07-22T15:56:06-07:00: Created ex18-signal-timeout reference solution
+
+**Root cause:** `exercises/world-04-deep-signal/ex18-signal-timeout/hints/solution.rs` was never authored when world-04 exercises were added. All exercises in worlds 4–6 lack solution.rs files; only worlds 1–3 have them.
+
+**What I did:**
+- Reproduced exact failure: `cargo run -p xtask -- solution ex18-signal-timeout` → `error: reference solution not yet available`
+- Inspected exercise metadata, README behavioral contract, tests, and ureq 2.12.1 source
+- Confirmed root cause: missing artifact only (no wiring bug)
+- Created `exercises/world-04-deep-signal/ex18-signal-timeout/hints/solution.rs` — idiomatic implementation using `AgentBuilder::new().timeout(timeout).build()`, precise timeout detection via `dyn Error + 'static::downcast_ref::<io::Error>()` on the transport source, and `into_string()` for body reading
+- Validated compile: standalone `cargo check` on solution.rs passed with ureq 2.12.1
+- Validated behavioral contract: all 8 ex18 tests pass with the existing user solution
+- Verified: `learn solution ex18-signal-timeout` now exits 0 and displays the reference
+
+**No regression test added:** Adding a "all exercises have solution.rs" test would immediately fail because worlds 4–6 have 19 other exercises with no solution.rs. Scoped to the specific artifact.
+
+**Files changed:**
+- `exercises/world-04-deep-signal/ex18-signal-timeout/hints/solution.rs` (new)
+
+**Pre-existing test failure (not mine):** `every_exercise_has_mission_banner_for_each_todo` fails due to user-modified `ex19-relay-dispatch/src/lib.rs`. All xtask unit + CLI tests pass (23 cli + 12 unit).
+
+📌 Team update (2026-07-22T16:27:03Z): Design Review campaign completeness completed. You own action item: Implement 18 missing solution files (`hints/solution.rs` for ex16, ex17, ex19–ex34). All files must be complete lib-crate code, compilable and testable. — Mikey (facilitator)
+
+📌 Team update (2026-07-22T16:48:29Z): Retrospective on marker failure complete. Safety decision: Unproven file changes must be treated as user-owned. Do not speculate about authorship as fact in findings. — Mikey (facilitator)
+
+✅ Campaign Complete (2026-07-22T16:56:56Z): 18 missing solution files successfully delivered (ex16, ex17, ex19–ex34). All approved by Brand and Fact Checker. Campaign now 34/34. Worktree safety confirmed: no touches to learner-owned ex20 source or other user files. — Mikey (facilitator)

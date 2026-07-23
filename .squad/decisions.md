@@ -1040,3 +1040,100 @@ Full output after first solve:
 
 **Policy:** Inventory tests should assert structural properties (e.g., every remaining todo!() has its banner) not fixed totals. The number of stubs decreases as learners solve exercises—this is intended behavior, not a regression that should trigger test failures.
 
+
+---
+
+### 2026-07-22T16:27:03Z: Solution artifacts are complete lib-crate code
+
+**By:** Mikey (facilitator), Data, Mouth, Brand
+
+**What:** All solution artifacts at `hints/solution.rs` must be complete, compilable, and testable lib-crate code. No partial code; no gaps. Ready for validation.
+
+**Why:** Learners need executable reference implementations. Incomplete artifacts would fail both syntax and test validation tiers.
+
+**Status:** Decided. Data owns implementation.
+
+---
+
+### 2026-07-22T16:27:03Z: Validation includes syntax and full compile/test tiers
+
+**By:** Mikey (facilitator), Data, Mouth, Brand
+
+**What:** Solution validation must include: (1) syntax check, (2) full compilation, (3) full test suite. Staged approach ensures progressive correctness checking.
+
+**Why:** Syntax-only checks miss runtime and semantic errors. Multi-tier validation catches logic bugs and incomplete implementations before learners attempt exercises.
+
+**Status:** Decided. Brand owns validation infrastructure.
+
+---
+
+### 2026-07-22T16:27:03Z: Full validation uses isolated fresh-copy approach
+
+**By:** Mikey (facilitator), Data, Mouth, Brand
+
+**What:** Full validation must use isolated fresh-copy approach. Never mutate learner `src/lib.rs`. Test solutions in a clean, sandbox environment independent of learner state.
+
+**Why:** Learners must not be surprised by mutations to their working directory. Isolation guarantees repeatability and prevents cross-contamination between validation runs.
+
+**Status:** Decided. Brand owns test infrastructure.
+
+---
+
+### 2026-07-22T16:27:03Z: Campaign completeness driven by campaign.toml
+
+**By:** Mikey (facilitator), Data, Mouth, Brand
+
+**What:** `campaign.toml` is the source of truth for campaign completeness. All validation checks (artifact existence, content, compile/test status) must read from `campaign.toml`. No hardcoded exercise counts; no hardcoded solution file lists.
+
+**Why:** Metadata-driven approach scales as new exercises are added. Prevents manual sync bugs. Single source of truth simplifies maintenance and future changes.
+
+**Status:** Decided. Brand owns completeness checks and metadata integration.
+
+---
+
+### 2026-07-22T16:27:03Z: Ex19 endpoint contract is /relay/dispatch
+
+**By:** Mikey (facilitator), Data, Mouth, Brand
+
+**What:** Ex19 HTTP request endpoint contract is `/relay/dispatch`. README, hints, and learner documentation claiming `/relay` are defective and must be corrected.
+
+**Why:** Learners must have consistent, accurate endpoint guidance. Mismatched documentation causes failed requests and confusion.
+
+**Status:** Decided. Mouth owns documentation correction.
+
+---
+
+### 2026-07-22T16:48:29Z: Worktree safety — unproven changes are user-owned
+
+**By:** Mikey, Data, Mouth, Brand
+
+**What:** When concurrent work creates file modifications with unproven authorship, they must be treated as user-owned and MUST NOT be restored, edited, or overwritten without explicit user confirmation. Marker checks and validation must defer until concurrent batch work completes.
+
+**Why:** Worktree isolation and user trust. Speculating about authorship and unilaterally modifying user files violates safety boundaries and can destroy work. Read-only provenance audits are safe; mutations require proof.
+
+**Status:** Decided. Applies to all concurrent squad workflows going forward.
+
+---
+
+### 2026-07-22T16:56:56Z: Campaign Solution Completeness — Final Reviewer Verdict: APPROVED
+
+**By:** Brand (Lead Reviewer), Fact Checker
+
+**What:** Campaign completion reviewed and approved. 34/34 exercises now have working, validated `hints/solution.rs` artifacts.
+
+**Reviewers:** 
+- **Brand (Final Review):** ✅ APPROVED Data's 18 solutions, Mikey's ex18 execution, Mouth's ex19 endpoint corrections
+- **Fact Checker:** ✅ APPROVED Brand's validation infrastructure after empirical 34/34 execution and learner-source hash verification
+
+**Quality Gated:**
+- All final checks pass (diff, shell syntax, xtask format, completeness tests)
+- Isolated validator: 34/34 pass in reviewer runs
+- Metadata-driven inventory complete and durable
+- Stale transient-count comment removed
+
+**Worktree Safety:**
+- Learner-owned modified files (ex18–ex21) treated as user-owned, never touched
+- Data explicitly confirmed no touches to ex20 working-tree source
+- No commits or staging performed
+
+**Status:** APPROVED. Campaign complete.

@@ -82,3 +82,9 @@ Focus: Ready for integration/merge. Archive: `log/2026-07-20T13-45-24.420-07-00-
 
 
 📌 Team update (2026-07-22T11:53:34.452-07:00): Campaign validation review complete. Stale binary diagnosis confirmed. Issue #1 solution command approval recorded in decisions.md. 4 integration test contracts finalized (solution_completed, solution_incomplete, solution_unknown_id, solution_missing_file). Test ownership confirmed: Brand. — Scribe
+
+📌 Team update (2026-07-22T16:27:03Z): Design Review campaign completeness completed. You own action items: (1) Implement metadata-driven completeness checks using `campaign.toml` (no hardcoded counts/lists); (2) Implement validation with syntax, compile, and test tiers; (3) Use isolated fresh-copy approach (never mutate learner `src/lib.rs`); (4) Integrate completeness/validation tests with CI. — Mikey (facilitator)
+
+📌 Team update (2026-07-22T16:48:29Z): Retrospective on marker failure complete. Safety decision: Unproven file changes must be treated as user-owned; never restore/edit without confirmation. Defer marker checks until after concurrent work completes. Audit provenance read-only. — Mikey (facilitator)
+
+✅ Campaign Complete (2026-07-22T16:56:56Z): Validation infrastructure complete and approved. Created `xtask/tests/solution_completeness.rs` and `scripts/validate-solutions.sh`. Metadata-driven inventory/CLI; isolated shadow-copy validator (34/34 pass). Removed stale comment. Final review approved Data solutions, Mikey ex18, Mouth docs. Fact Checker approved validation artifacts. — Mikey (facilitator)

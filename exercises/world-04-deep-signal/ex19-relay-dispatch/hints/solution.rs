@@ -1,4 +1,4 @@
-use std::io;
+use std::io::{self, Read};
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -29,19 +29,21 @@ pub fn dispatch_relay(
     base_url: &str,
     request: &RelayDispatchRequest,
 ) -> Result<RelayDispatchReceipt, RelayDispatchError> {
-    use RelayDispatchError::*;
-    let req_url: String = format!("{}/relay/dispatch", base_url.trim_end_matches("/"));
-    let json_raw: String = serde_json::to_string(request).map_err(Serialize)?;
+    let endpoint = format!("{}/relay/dispatch", base_url.trim_end_matches('/'));
+    let payload = serde_json::to_string(request).map_err(RelayDispatchError::Serialize)?;
 
-    let mut bytes: Vec<u8> = Vec::new();
-    ureq::post(&req_url)
+    let response = ureq::post(&endpoint)
         .set("Content-Type", "application/json")
-        .send_string(&json_raw)
-        .map_err(Request)?
+        .send_string(&payload)
+        .map_err(RelayDispatchError::Request)?;
+
+    let mut bytes = Vec::new();
+    response
         .into_reader()
         .read_to_end(&mut bytes)
-        .map_err(ReadBody)?;
-    let resp: String = String::from_utf8(bytes)
-        .map_err(|err| ReadBody(io::Error::new(io::ErrorKind::InvalidData, err)))?;
-    serde_json::from_str::<RelayDispatchReceipt>(&resp).map_err(Decode)
+        .map_err(RelayDispatchError::ReadBody)?;
+    let body = String::from_utf8(bytes).map_err(|error| {
+        RelayDispatchError::ReadBody(io::Error::new(io::ErrorKind::InvalidData, error))
+    })?;
+    serde_json::from_str::<RelayDispatchReceipt>(&body).map_err(RelayDispatchError::Decode)
 }

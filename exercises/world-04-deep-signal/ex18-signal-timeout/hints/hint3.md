@@ -15,8 +15,10 @@ function fetch_signal_with_timeout(base_url, timeout):
                 if no  → return SignalTimeoutError::Transport(transport)
             Ok(response) → continue
 
-    Step 4: Read the body string from response.into_string()
-            → on error, return SignalTimeoutError::ReadBody
+    Step 4: Read raw bytes from response.into_reader() via read_to_end
+            → on I/O error, return SignalTimeoutError::ReadBody
+            Decode bytes to UTF-8 String with String::from_utf8
+            → on invalid UTF-8, return SignalTimeoutError::ReadBody
 
     Step 5: Deserialize the body into SignalEnvelope with serde_json::from_str
             → on error, return SignalTimeoutError::Decode

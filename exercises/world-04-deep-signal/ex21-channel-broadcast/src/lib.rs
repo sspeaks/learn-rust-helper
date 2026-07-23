@@ -25,18 +25,42 @@ pub async fn fetch_broadcast_receipt(
     base_url: &str,
     target: &BroadcastTarget,
 ) -> Result<BroadcastReceipt, ChannelBroadcastError> {
-    // ══════════════════════════════════════════════════════════════
-    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-    // ══════════════════════════════════════════════════════════════
-    todo!("Request one channel receipt from the broadcast endpoint")
+    use ChannelBroadcastError::*;
+
+    let req_url: String = format!(
+        "{}/broadcast/{}",
+        base_url.trim_end_matches("/"),
+        target.channel
+    );
+
+    let res = reqwest::get(req_url).await.map_err(Request)?;
+    let status = res.status();
+    if !status.is_success() {
+        return Err(InvalidStatus {
+            channel: target.channel.clone(),
+            status,
+        });
+    }
+
+    res.json::<BroadcastReceipt>().await.map_err(Decode)
 }
 
 pub async fn broadcast_channels(
     base_url: &str,
     targets: &[BroadcastTarget],
 ) -> Result<Vec<BroadcastReceipt>, ChannelBroadcastError> {
-    // ══════════════════════════════════════════════════════════════
-    // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-    // ══════════════════════════════════════════════════════════════
-    todo!("Fetch all channel receipts concurrently with structured concurrency")
+    let futures: Vec<_> = targets
+        .iter()
+        .map(|targ| fetch_broadcast_receipt(base_url, targ))
+        .collect();
+    let mut res: Vec<Result<BroadcastReceipt, ChannelBroadcastError>> = Vec::new();
+    for future in futures {
+        let val = future.await;
+        if val.is_err() {
+            return Err(val.unwrap_err());
+        }
+        res.push(val);
+    }
+
+    res.into_iter().collect()
 }

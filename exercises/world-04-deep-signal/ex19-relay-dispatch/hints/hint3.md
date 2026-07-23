@@ -5,7 +5,7 @@ function dispatch_relay(base_url, request):
     Step 1: Serialize request to JSON string
             → on error, return RelayDispatchError::Serialize
 
-    Step 2: Send POST to "{base_url}/relay"
+    Step 2: Send POST to "{base_url}/relay/dispatch"
             Set Content-Type to "application/json"
             Attach the serialized JSON as the body
             → on error, return RelayDispatchError::Request
