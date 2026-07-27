@@ -7,30 +7,34 @@ pub struct TelemetryBuffer {
 
 impl TelemetryBuffer {
     pub fn with_capacity(label: impl Into<String>, capacity: usize) -> Self {
-        // ══════════════════════════════════════════════════════════════
-        // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-        // ══════════════════════════════════════════════════════════════
-        todo!("Build a new TelemetryBuffer with an empty readings list")
+        Self { label: label.into(), capacity, readings: Vec::new() }
     }
 
     pub fn record(&mut self, reading: i32) -> bool {
-        // ══════════════════════════════════════════════════════════════
-        // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-        // ══════════════════════════════════════════════════════════════
-        todo!("Append reading when capacity allows and report success")
+        if self.readings.len() < self.capacity {
+            self.readings.push(reading);
+            return true;
+        } else { 
+            return false;
+        }
     }
 
     pub fn average(&self) -> Option<f64> {
-        // ══════════════════════════════════════════════════════════════
-        // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-        // ══════════════════════════════════════════════════════════════
-        todo!("Return None for empty buffers, otherwise return the arithmetic mean")
+        let len = self.readings.len();
+        if len == 0 { return None; }
+        if len > 2^53-1 {
+            panic!("how did we overflow on len!?!");
+        }
+        let sum: i32 = self.readings.iter().sum();
+        Some(f64::try_from(sum).expect("Sum shouldn't overflow for simple example")
+            / len as f64)
     }
 
     pub fn into_report(self) -> String {
-        // ══════════════════════════════════════════════════════════════
-        // 🚀 YOUR MISSION: Replace the todo!() below with your solution.
-        // ══════════════════════════════════════════════════════════════
-        todo!("Consume the buffer and return 'label:count@average' or 'label:0@n/a'")
+        if self.readings.is_empty() {
+            format!("{}:0@n/a", self.label)
+        } else {
+            format!("{}:{}@{:.1}", self.label, self.readings.len(), self.average().expect("already checked len"))
+        }
     }
 }
